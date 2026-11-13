@@ -1,0 +1,10 @@
+# Portali open data delle Regioni italiane : pubblicano i calendari delle sagre e degli eventi che il sito riprende (fonte primaria, licenza CC0 o CC BY).
+dati.lombardia.it
+# Portale open data della Regione Emilia-Romagna (catalogo CKAN regionale).
+dati.emilia-romagna.it
+# Portale open data della Regione Puglia.
+dati.puglia.it
+# Catalogo nazionale dei dati aperti, gestito dall'Agenzia per l'Italia digitale (AgID).
+dati.gov.it
+# Open Data Hub Alto Adige / Südtirol : piattaforma open data gestita da NOI Techpark (Bolzano), tra i partner la Provincia autonoma di Bolzano ; eventi turistici in CC0.
+opendatahub.com

@@ -1,0 +1,24 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import LegalIdentity from '../../components/LegalIdentity.astro';
+import { AUTHOR_NAME, CONTACT_EMAIL, LAST_UPDATED, SITE_NAMES } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { contactPageSchema } from '../../lib/seo';
+const lang = 'en';
+const description = 'Write to the publisher of Sagre del Weekend: a wrong date or place, a cancelled sagra, a new regional file to read, or adding the search to your own website.';
+---
+<PageLayout title={`Contact – ${SITE_NAMES[lang]}`} description={description} lang={lang} noindex={true} jsonLd={[contactPageSchema({ name: 'Contact', description, path: route('contact', lang), lang })]} breadcrumbs={[{ label: 'Contact' }]} showAuthor={false}>
+  <div class="prose prose-slate max-w-none">
+    <h1>Contact</h1>
+    <p>One address, read every week: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. There is no phone line: the site sells nothing and calls no one back.</p>
+    <h2>A date or place looks wrong</h2>
+    <p>Give the page, the name of the sagra and, if you can, a link to the town’s or Pro Loco’s website showing the right date. We check and correct.</p>
+    <h2>You run a Pro Loco or a town</h2>
+    <p>We only publish events from open regional files. If your sagra is missing, the surest route is to file it with the Region: in Lombardy regional law 6 of 2010 requires it. If your Region publishes a new open file, let us know.</p>
+    <h2>Embedding the search</h2>
+    <p>Pro Loco associations, local papers and tourist offices can embed the sagre search and the open-markets tool for free: <a href={route('widget', lang)}>embeddable tools</a>.</p>
+    <h2>Publisher</h2>
+    <LegalIdentity lang={lang} />
+    <p>{AUTHOR_NAME} is responsible for the content of {SITE_NAMES[lang]}; full details in the <a href={route('terms', lang)}>legal notice</a>. Page reviewed on {LAST_UPDATED}.</p>
+  </div>
+</PageLayout>

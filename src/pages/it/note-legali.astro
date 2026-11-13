@@ -1,0 +1,31 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import LegalIdentity from '../../components/LegalIdentity.astro';
+import { AUTHOR_NAME, CLARITY_ID, CONTACT_EMAIL, GA4_ID, LAST_UPDATED, LEGAL, SITE_NAMES, SITE_URL } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+const lang = 'it';
+---
+<PageLayout title={`Note legali – ${SITE_NAMES[lang]}`} description="Editore, direttore della pubblicazione, hosting, proprietà intellettuale, testi di legge e pagine ufficiali citati, limiti di responsabilità e legge applicabile del sito." lang={lang} noindex={true} breadcrumbs={[{ label: 'Note legali' }]} showAuthor={false}>
+  <div class="prose prose-slate max-w-none">
+    <h1>Note legali</h1>
+    <p>Informazioni pubblicate ai sensi dell’articolo 6 III-1 della legge francese n. 2004-575 del 21 giugno 2004 sulla fiducia nell’economia digitale (LCEN), essendo l’editore stabilito in Francia, e dell’articolo 7 del decreto legislativo 9 aprile 2003 n. 70.</p>
+    <h2>Editore</h2>
+    <LegalIdentity lang={lang} />
+    <p>Direttore della pubblicazione: {AUTHOR_NAME}, responsabile dei contenuti pubblicati su {SITE_URL}.</p>
+    <h2>Hosting</h2>
+    <LegalIdentity mode="hosting" lang={lang} />
+    <h2>Scopo del sito, nessuna consulenza</h2>
+    <p>Il sito mostra gratuitamente le sagre, le fiere, le feste e i mercatini pubblicati negli open data di Regione Lombardia, dell’Open Data Hub Alto Adige, di Regione Emilia-Romagna e di Regione Puglia. Le date sono quelle comunicate dai Comuni e dagli enti del turismo e possono cambiare: fanno fede il programma del Comune e quello degli organizzatori. Il sito è indipendente: non è collegato alle Regioni, ai Comuni o alle Pro Loco, non usa stemmi né loghi ufficiali, non vende biglietti né visibilità. Metodo e limiti: <a href={route('method', lang)}>metodo</a>.</p>
+    <h2>Fonti citate</h2>
+    <p>Dati: file di Regione Lombardia e dell’Open Data Hub Alto Adige in licenza CC0 1.0; file di Regione Emilia-Romagna (APT Servizi) e di Regione Puglia in licenza Creative Commons Attribuzione 4.0, citati su ogni pagina con l’indicazione che i dati sono stati selezionati e adattati. Il sito riprende nome, date, luogo, orari e tipo dell’evento, non le descrizioni né le immagini, e rimanda alla scheda ufficiale quando esiste.</p>
+    <h2>Limiti di responsabilità</h2>
+    <p>Le informazioni sono rilette sui testi ufficiali e controllate, senza garanzia che siano prive di errori o sempre aggiornate. L’editore non risponde di uno spostamento o di un annullamento deciso dal Comune o dagli organizzatori, né di un viaggio organizzato solo sulla base di una data indicata qui. Gli errori si segnalano dalla pagina <a href={route('contact', lang)}>contatti</a>.</p>
+    <h2>Proprietà intellettuale</h2>
+    <p>Testi, grafica e codice sono protetti e restano di proprietà dell’editore; brevi citazioni sono ammesse con un link alla pagina originale. Le fonti citate restano dei rispettivi titolari.</p>
+    <h2>Inserire lo strumento</h2><p>La ricerca delle sagre e il controllo dei mercatini di Natale si possono inserire gratis con un iframe, lasciando visibile il link: vedi la <a href={route('widget', lang)}>pagina del widget</a>.</p>
+    <h2>Dati personali e cookie</h2>
+    {GA4_ID ? (<p>Ciò che scegli nella ricerca resta nel tuo browser. Il sito deposita i cookie di misurazione del pubblico di Google Analytics (<code>_ga</code>, <code>_ga_{GA4_ID.replace('G-', '')}</code>, 13 mesi al massimo), senza pubblicità{CLARITY_ID && '; la stabilità delle pagine è controllata con Microsoft Clarity, senza cookie'}. Dettagli, base giuridica e opposizione: <a href={route('privacy', lang)}>informativa privacy</a> e pagina <a href={route('cookies', lang)}>cookie</a>.</p>) : (<p>Ciò che scegli nella ricerca resta nel tuo browser e il sito non deposita cookie{CLARITY_ID && '; la stabilità delle pagine è controllata in forma anonima con Microsoft Clarity, senza cookie'}. Vedi l’<a href={route('privacy', lang)}>informativa privacy</a> e la pagina <a href={route('cookies', lang)}>cookie</a>.</p>)}
+    <h2>Segnalazioni</h2><p>Contenuti illeciti: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>, con l’indirizzo della pagina e il motivo.</p>
+    <h2>Legge applicabile</h2><p>Legge francese, essendo l’editore stabilito in Francia, fatti salvi i diritti inderogabili del consumatore del paese di residenza. In mancanza di accordo, sono competenti i tribunali di {LEGAL.jurisdiction}. Aggiornamento: {LAST_UPDATED}.</p>
+  </div>
+</PageLayout>

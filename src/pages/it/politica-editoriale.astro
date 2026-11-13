@@ -1,0 +1,26 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import { AUTHOR_NAME, CONTACT_EMAIL, LAST_UPDATED, REVIEW_CYCLE_MONTHS, SITE_NAMES } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+const lang = 'it';
+---
+<PageLayout title={`Politica editoriale – ${SITE_NAMES[lang]}`} description="Da dove vengono le sagre, le fiere e i mercatini pubblicati qui, in che ordine leggiamo le fonti, come filtriamo gli eventi e cosa succede quando si segnala un errore." lang={lang} noindex={true} breadcrumbs={[{ label: 'Politica editoriale' }]} showAuthor={false}>
+  <div class="prose prose-slate max-w-none">
+    <h1>Politica editoriale e delle correzioni</h1>
+    <p>Chi fa un’ora di strada per una sagra che non c’è perde la domenica. Ecco da dove viene ogni data e cosa facciamo quando una è sbagliata.</p>
+    <h2>Responsabilità</h2><p>{AUTHOR_NAME} risponde di ogni scheda e di ogni calcolo. Un dato che non corrisponde alla sua fonte si segnala a <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.</p>
+    <h2>Ordine delle fonti</h2>
+    <ol>
+      <li><strong>File aperti delle Regioni</strong>: Lombardia (sagre e fiere comunicate dai Comuni), Emilia-Romagna (eventi di APT Servizi), Puglia;</li>
+      <li><strong>Banche dati pubbliche provinciali</strong>: Open Data Hub dell’Alto Adige;</li>
+      <li><strong>Siti dei Comuni e delle Pro Loco</strong>, solo per verificare una segnalazione.</li>
+    </ol>
+    <p>Altri siti di sagre, social network e articoli di giornale non sono una fonte. Una regione senza file aperto e aggiornato non viene coperta.</p>
+    <h2>Lette, non ricopiate</h2><p>Nessuna scheda è scritta a mano. Uno script scarica i file, tiene solo le date a venire, classifica gli eventi con regole fisse e scrive su ogni scheda la fonte e il giorno di lettura. Test automatici controllano il calcolo del weekend, delle distanze e dei giorni di apertura.</p>
+    <h2>Riletture</h2><p>I file vengono riletti dall’editore; una revisione completa almeno ogni {REVIEW_CYCLE_MONTHS} mesi. La data dell’ultima lettura è su ogni pagina.</p>
+    <h2>Gestione degli errori</h2>
+    <ol><li>Verifica sulla fonte regionale e sul sito del Comune.</li><li>Scheda corretta o tolta, regola di filtro aggiornata se serve.</li><li>Nuova data di lettura sulle pagine interessate.</li></ol>
+    <h2>Indipendenza</h2><p>Nessun denaro da Pro Loco, Comuni o organizzatori. Nessuna inserzione a pagamento, nessun link di affiliazione, nessun modulo di raccolta contatti.</p>
+    <p>Vedi anche il <a href={route('method', lang)}>metodo</a>. Versione: {LAST_UPDATED}.</p>
+  </div>
+</PageLayout>

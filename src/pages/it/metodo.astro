@@ -1,0 +1,45 @@
+---
+/** Metodo: fonti regionali, filtri, classificazione, ricerca per distanza, limiti. Ogni numero dal motore e dai file letti. */
+import PageLayout from '../../layouts/PageLayout.astro';
+import { route } from '../../i18n/routes';
+import { KIT as K } from '../../lib/kit';
+import { srcLink } from '../../lib/helpers';
+import { breadcrumbSchema, webPageSchema } from '../../lib/seo';
+const lang = 'it';
+const path = route('method', lang);
+const title = 'Come leggiamo i calendari delle sagre: metodo e fonti';
+const description = 'Da dove vengono le sagre, le fiere e i mercatini di Natale del sito: open data di Lombardia, Alto Adige ed Emilia-Romagna, filtri, distanze e limiti spiegati.';
+const s = (k: string, t: string) => srcLink(k, lang, t);
+const F = K.FONTI;
+const tot = K.EVENTI.length;
+const per = (r: 'lom' | 'aa' | 'er' | 'pug') => K.EVENTI.filter((e) => e.r === r).length;
+const ristoro = K.EVENTI.filter((e) => e.r === 'lom' && e.ris).length;
+const ultimo = K.EVENTI.reduce((m, e) => (e.al > m ? e.al : m), K.OGGI);
+---
+<PageLayout title={title} description={description} lang={lang} jsonLd={[webPageSchema({ name: 'Metodo', description, path, lang }), breadcrumbSchema([{ name: 'Home', path: route('home', lang) }, { name: 'Metodo', path }])]} breadcrumbs={[{ label: 'Metodo' }]}>
+  <article class="prose prose-slate max-w-none">
+    <h1>Come leggiamo i calendari delle sagre</h1>
+    <p>Ecco come leggiamo i calendari delle sagre. Il calendario contiene {tot} sagre, fiere, feste e mercatini con date dal {K.dl(K.OGGI, lang, false)} al {K.dl(ultimo, lang, false)}. Vengono tutti da file pubblicati dalle Regioni in formato aperto, scaricati e letti il {K.dl(K.LETTO_IL, lang, false)}. Nessun evento è scritto a mano e nessuno viene da altri siti di sagre.</p>
+
+    <h2>Come leggiamo i calendari delle sagre, fonte per fonte</h2>
+    <p><strong>Lombardia.</strong> I Comuni lombardi devono comunicare alla Regione il calendario delle sagre e delle fiere su area pubblica, come prevede l’articolo 18 bis della legge regionale n. 6 del 2010. La Regione pubblica l’elenco come <Fragment set:html={s('lom', 'open data « Sagre e fiere su area pubblica »')} />, con licenza <Fragment set:html={s('cc0', 'CC0')} />. Il file letto conta {F.lom.righe} righe ({F.lom.sagre} sagre e {F.lom.fiere} fiere); ne restano {per('lom')} con date a venire.</p>
+    <p><strong>Alto Adige.</strong> L’<Fragment set:html={s('odh', 'Open Data Hub')} /> della Provincia di Bolzano, gestito dal NOI Techpark, espone gli eventi delle associazioni turistiche con licenza CC0. Abbiamo letto {F.odh_schede} schede; dopo i filtri ne restano {per('aa')}.</p>
+    <p><strong>Emilia-Romagna.</strong> La Regione pubblica l’<Fragment set:html={s('er', 'elenco degli eventi a tema turistico attivi')} /> di APT Servizi, con licenza <Fragment set:html={s('ccby', 'CC BY 4.0')} />: {F.er_schede} schede lette, {per('er')} tenute.</p>
+    <p><strong>Puglia.</strong> Il file regionale <Fragment set:html={s('pug', '« Cosa fare in Puglia »')} /> contiene migliaia di attività, ma pochissime sagre con una data futura: ne pubblichiamo {per('pug')}.</p>
+    <p>L’Umbria pubblica un elenco di eventi su <Fragment set:html={s('umbria', 'dati.gov.it')} />, ma le ultime date sono del 2023: non lo usiamo. Lo stesso vale per i file di altre regioni fermi agli anni passati.</p>
+
+    <h2>Quali eventi teniamo</h2>
+    <p>Teniamo un evento se la sua ultima data è uguale o successiva al giorno di lettura e se il titolo o la descrizione indicano una sagra, una fiera, una festa di paese, un mercato o un mercatino di Natale. Escludiamo concerti, mostre, conferenze, gare sportive e visite guidate. In Lombardia il campo « tipo » del file dice già se si tratta di sagra o fiera; il servizio di ristorazione è dichiarato dal Comune ({ristoro} eventi su {per('lom')} lo prevedono).</p>
+    <p>Il tipo che leggi su ogni scheda (sagra, fiera, festa, mercato, mercatino di Natale) viene dal titolo con regole fisse: per esempio « Christkindlmarkt » o « mercatino di Natale » danno un mercatino di Natale. Una scheda che non rientra in nessuna regola resta fuori.</p>
+
+    <h2>Weekend, distanze e « aperto oggi »</h2>
+    <p>Il weekend va dal venerdì alla domenica. Un evento compare se almeno uno dei suoi giorni cade nel periodo scelto; se il file indica giorni precisi (per esempio solo i sabati), contano solo quelli. La distanza da una città è calcolata in linea d’aria, fra il centro del comune e le coordinate dell’evento scritte nel file regionale. La strada vera è più lunga.</p>
+    <p>Gli eventi sparsi su più di 45 giorni, come un mercato settimanale o una degustazione ripetuta per tutto l’inverno, sono nascosti di serie e contati a parte, perché altrimenti comparirebbero in ogni weekend; un clic li mostra. Restano visibili quando cerchi i mercati.</p>
+
+    <h2>Limiti</h2>
+    <p>Il calendario copre la Lombardia, l’Alto Adige, l’Emilia-Romagna e qualche evento in Puglia. Per le altre regioni non disponiamo di un file aperto e aggiornato delle sagre: non abbiamo pagine su di loro. Una sagra che il Comune non ha comunicato alla Regione, o che è stata annullata dopo la comunicazione, non lo sappiamo. Prima di partire controlla sul sito della Pro Loco o del Comune.</p>
+
+    <h2>Aggiornamento</h2>
+    <p>I file vengono riletti a mano dall’editore; la data dell’ultima lettura è scritta su ogni pagina e accanto a ogni ricerca. Gli errori si segnalano dalla pagina <a href={route('contact', lang)}>contatti</a>; come correggiamo è scritto nella <a href={route('editorial', lang)}>politica editoriale</a>.</p>
+  </article>
+</PageLayout>

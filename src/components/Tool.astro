@@ -1,0 +1,11 @@
+---
+/** L'outil d'une page : le moteur de recherche (Trova) avec les réglages de la page, ou « è aperto ? » (Aperto). */
+import Trova from './cal/Trova';
+import Aperto from './cal/Aperto';
+import type { Preset } from './cal/preset';
+interface Props { kind: 'trova' | 'aperto'; lang: 'it' | 'en'; preset?: Preset; idPrefix?: string }
+const { kind, lang, preset = {}, idPrefix = 't' } = Astro.props;
+---
+{kind === 'aperto'
+  ? <Aperto client:load lang={lang} regione={preset.regione ?? ''} idPrefix={idPrefix} />
+  : <Trova client:load lang={lang} preset={preset} idPrefix={idPrefix} />}

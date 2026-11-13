@@ -1,0 +1,45 @@
+---
+/** Method: regional sources, filters, classification, distance search, limits. Every number from the engine and the files read. */
+import PageLayout from '../../layouts/PageLayout.astro';
+import { route } from '../../i18n/routes';
+import { KIT as K } from '../../lib/kit';
+import { srcLink } from '../../lib/helpers';
+import { breadcrumbSchema, webPageSchema } from '../../lib/seo';
+const lang = 'en';
+const path = route('method', lang);
+const title = 'Sagre calendars in Italy: our method and regional sources';
+const description = 'Where the site’s sagre, fairs and Christmas markets come from: open data from Lombardy, South Tyrol and Emilia-Romagna, filters, distances and limits explained.';
+const s = (k: string, t: string) => srcLink(k, lang, t);
+const F = K.FONTI;
+const tot = K.EVENTI.length;
+const per = (r: 'lom' | 'aa' | 'er' | 'pug') => K.EVENTI.filter((e) => e.r === r).length;
+const ristoro = K.EVENTI.filter((e) => e.r === 'lom' && e.ris).length;
+const ultimo = K.EVENTI.reduce((m, e) => (e.al > m ? e.al : m), K.OGGI);
+---
+<PageLayout title={title} description={description} lang={lang} jsonLd={[webPageSchema({ name: 'Method', description, path, lang }), breadcrumbSchema([{ name: 'Home', path: route('home', lang) }, { name: 'Method', path }])]} breadcrumbs={[{ label: 'Method' }]}>
+  <article class="prose prose-slate max-w-none">
+    <h1>How we read Italy’s sagre calendars</h1>
+    <p>This is how we read the sagre calendars of Italy’s regions. The calendar holds {tot} sagre (local food festivals), fairs, village feasts and markets dated from {K.dl(K.OGGI, lang, false)} to {K.dl(ultimo, lang, false)}. All of them come from files that Italian regions publish as open data, downloaded and read on {K.dl(K.LETTO_IL, lang, false)}. No event is typed by hand and none is taken from other festival websites.</p>
+
+    <h2>Sagre calendars in Italy, source by source</h2>
+    <p><strong>Lombardy.</strong> Lombardy’s municipalities must file their calendar of sagre and fairs on public land with the Region, under Article 18 bis of regional law 6 of 2010. The Region publishes the list as <Fragment set:html={s('lom', 'open data “Sagre e fiere su area pubblica”')} />, under a <Fragment set:html={s('cc0', 'CC0')} /> licence. The file read has {F.lom.righe} rows ({F.lom.sagre} sagre and {F.lom.fiere} fairs); {per('lom')} have upcoming dates.</p>
+    <p><strong>South Tyrol.</strong> The <Fragment set:html={s('odh', 'Open Data Hub')} /> of the Province of Bolzano, run by NOI Techpark, publishes the events of local tourism associations under CC0. We read {F.odh_schede} listings; {per('aa')} remain after filtering.</p>
+    <p><strong>Emilia-Romagna.</strong> The Region publishes APT Servizi’s <Fragment set:html={s('er', 'list of active tourism events')} /> under <Fragment set:html={s('ccby', 'CC BY 4.0')} />: {F.er_schede} listings read, {per('er')} kept.</p>
+    <p><strong>Apulia.</strong> The regional file <Fragment set:html={s('pug', '“Cosa fare in Puglia”')} /> holds thousands of activities but very few sagre with a future date: we publish {per('pug')}.</p>
+    <p>Umbria publishes a list of events on <Fragment set:html={s('umbria', 'dati.gov.it')} />, but its latest dates are from 2023, so we do not use it. The same goes for other regions’ files stuck in past years.</p>
+
+    <h2>Which events we keep</h2>
+    <p>We keep an event if its last date is on or after the day the file was read and if its title or description points to a sagra, a fair, a village feast, a market or a Christmas market. Concerts, exhibitions, talks, sports races and guided tours are left out. In Lombardy the file’s “type” field already says sagra or fair, and the municipality states whether food is served ({ristoro} of {per('lom')} events do).</p>
+    <p>The type shown on each listing (sagra, fair, feast, market, Christmas market) comes from the title through fixed rules: “Christkindlmarkt” or “mercatino di Natale”, for instance, give a Christmas market. A listing that matches no rule stays out.</p>
+
+    <h2>Weekends, distances and “open today”</h2>
+    <p>A weekend runs from Friday to Sunday. An event shows up if at least one of its days falls in the chosen period; if the file lists specific days (Saturdays only, say), only those count. Distance from a town is measured as the crow flies between the town centre and the event coordinates written in the regional file. The road is longer.</p>
+    <p>Events spread over more than 45 days, such as a weekly market or a tasting repeated all winter, are hidden by default and counted separately, since they would otherwise appear every weekend; one click shows them. They stay visible when you search for markets.</p>
+
+    <h2>Limits</h2>
+    <p>The calendar covers Lombardy, South Tyrol, Emilia-Romagna and a few events in Apulia. For other regions we have no open, up-to-date file of sagre, so we have no pages on them. We cannot know about a sagra the municipality did not file, or one cancelled after filing. Check the Pro Loco’s or the town’s website before setting off.</p>
+
+    <h2>Updates</h2>
+    <p>The publisher re-reads the files by hand; the date of the last reading is written on every page and next to every search. Report errors through the <a href={route('contact', lang)}>contact page</a>; how we correct them is set out in the <a href={route('editorial', lang)}>editorial policy</a>.</p>
+  </article>
+</PageLayout>

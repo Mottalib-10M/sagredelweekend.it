@@ -1,0 +1,4 @@
+# Programma di una sagra lombarda : il sito compone l'indirizzo dalla scheda (ID) del file regionale.
+https://www.procedimenti.servizirl.it/sagre/public/programma/
+# Scheda di un evento di Emilia-Romagna Turismo : il sito compone l'indirizzo dallo slug del file regionale.
+https://emiliaromagnaturismo.it/it/eventi/

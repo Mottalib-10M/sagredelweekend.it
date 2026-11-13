@@ -1,0 +1,20 @@
+{
+ "accent": "#0B6B3A",
+ "symbol": "SW",
+ "variants": [
+  {
+   "file": "og-it.png",
+   "title": "Sagre questo weekend\ndai calendari ufficiali",
+   "subtitle": "Lombardia · Alto Adige · Emilia-Romagna · Mercatini di Natale 2026",
+   "badge": "Open data regionali letti il 13 novembre 2026",
+   "brand": "Sagre del Weekend"
+  },
+  {
+   "file": "og-en.png",
+   "title": "Italian sagre this weekend\nfrom official calendars",
+   "subtitle": "Lombardy · South Tyrol · Emilia-Romagna · Christmas markets 2026",
+   "badge": "Regional open data read on 13 November 2026",
+   "brand": "Sagre del Weekend"
+  }
+ ]
+}

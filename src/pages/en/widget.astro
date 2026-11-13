@@ -1,0 +1,29 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import { SITE_URL } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { breadcrumbSchema } from '../../lib/seo';
+const lang = 'en';
+const code = (name: string, t: string, h: number) => `<iframe src="${SITE_URL}/embed/${lang}/${name}/" title="${t}" width="100%" height="${h}" style="border:0;max-width:1100px" loading="lazy"></iframe>`;
+const items = [
+  { name: 'sagre', h2: 'Sagre this weekend', text: 'Region or town, period and type of event: your readers see the sagre, fairs and feasts in the regional calendars.', t: 'Sagre this weekend', h: 900 },
+  { name: 'mercatini', h2: 'Is the Christmas market open?', text: 'A Christmas market and a day: open or closed, and how many days until it opens or closes.', t: 'Christmas market open', h: 520 },
+];
+---
+<PageLayout title="Embed the Italian sagre search on your website for free" description="The sagre-this-weekend search and the open-Christmas-market tool, free to embed with an iframe: paste the code once and the data stay those of the regional files." lang={lang} noindex={true} jsonLd={[breadcrumbSchema([{ name: 'Home', path: route('home', lang) }, { name: 'Widget', path: route('widget', lang) }])]} breadcrumbs={[{ label: 'Widget' }]} showAuthor={false}>
+  <header class="mb-6">
+    <h1 class="text-3xl font-bold text-navy-900 md:text-4xl">Embed the sagre search</h1>
+    <p class="mt-3 text-lg text-navy-700">For Pro Loco associations, local papers and tourist offices: paste the code once, every new reading of the regional files arrives by itself.</p>
+  </header>
+  <div class="prose prose-slate max-w-none">
+    {items.map((i) => (<>
+      <h2>{i.h2}</h2>
+      <p>{i.text}</p>
+      <pre class="overflow-x-auto rounded-lg bg-navy-900 p-4 text-sm text-white"><code>{code(i.name, i.t, i.h)}</code></pre>
+    </>))}
+    <p>For the Italian version replace <code>/embed/en/</code> with <code>/embed/it/</code>. Terms: the source link and the licence line under the tool stay visible, the tool is not altered and comes with no warranty. Questions via the <a href={route('contact', lang)}>contact page</a>.</p>
+  </div>
+  <div class="mt-8 overflow-hidden rounded-xl border border-navy-200">
+    <iframe src={`/embed/${lang}/sagre/`} title="Sagre this weekend" width="100%" height="900" style="border:0" loading="lazy"></iframe>
+  </div>
+</PageLayout>

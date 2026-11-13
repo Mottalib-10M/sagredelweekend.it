@@ -1,0 +1,26 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import LegalIdentity from '../../components/LegalIdentity.astro';
+import { AUTHOR_NAME, CONTACT_EMAIL, LAST_UPDATED, SITE_NAMES } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+import { contactPageSchema } from '../../lib/seo';
+const lang = 'it';
+const description = 'Scrivi all’editore di Sagre del Weekend: una data o un luogo sbagliati, una sagra annullata, un file regionale nuovo da leggere, oppure inserire la ricerca nel tuo sito.';
+---
+<PageLayout title={`Contatti – ${SITE_NAMES[lang]}`} description={description} lang={lang} noindex={true} jsonLd={[contactPageSchema({ name: 'Contatti', description, path: route('contact', lang), lang })]} breadcrumbs={[{ label: 'Contatti' }]} showAuthor={false}>
+  <div class="prose prose-slate max-w-none">
+    <h1>Contatti</h1>
+    <p>Un solo indirizzo, letto ogni settimana: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. Non c’è una linea telefonica: il sito non vende nulla e non richiama nessuno.</p>
+    <h2>Una data o un luogo sembrano sbagliati</h2>
+    <p>Indica la pagina, il nome della sagra e, se puoi, il link al sito del Comune o della Pro Loco che riporta la data giusta. Verifichiamo e correggiamo.</p>
+    <h2>Sei una Pro Loco o un Comune</h2>
+    <p>Pubblichiamo solo eventi dei file regionali aperti. Se la tua sagra manca, il modo più sicuro è comunicarla alla Regione: in Lombardia lo prevede la legge regionale n. 6 del 2010. Se la tua Regione pubblica un nuovo file aperto, segnalacelo.</p>
+    <h2>Inserire la ricerca</h2>
+    <p>Pro Loco, giornali locali e uffici turistici possono inserire gratis la ricerca delle sagre e lo strumento dei mercatini aperti: <a href={route('widget', lang)}>strumenti da incorporare</a>.</p>
+    <h2>Cosa non facciamo</h2>
+    <p>Nessuna inserzione a pagamento, nessuna vendita di biglietti, nessuna prenotazione.</p>
+    <h2>Editore</h2>
+    <LegalIdentity lang={lang} />
+    <p>{AUTHOR_NAME} è responsabile dei contenuti di {SITE_NAMES[lang]}; i dati completi sono nelle <a href={route('terms', lang)}>note legali</a>. Pagina rivista il {LAST_UPDATED}.</p>
+  </div>
+</PageLayout>

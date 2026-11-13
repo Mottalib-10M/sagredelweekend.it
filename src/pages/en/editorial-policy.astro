@@ -1,0 +1,26 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import { AUTHOR_NAME, CONTACT_EMAIL, LAST_UPDATED, REVIEW_CYCLE_MONTHS, SITE_NAMES } from '../../data/site-config';
+import { route } from '../../i18n/routes';
+const lang = 'en';
+---
+<PageLayout title={`Editorial policy – ${SITE_NAMES[lang]}`} description="Where the sagre, fairs and markets published here come from, in which order we read sources, how events are filtered and what happens when you report an error." lang={lang} noindex={true} breadcrumbs={[{ label: 'Editorial policy' }]} showAuthor={false}>
+  <div class="prose prose-slate max-w-none">
+    <h1>Editorial and corrections policy</h1>
+    <p>Driving an hour to a sagra that is not on wastes a Sunday. Here is where every date comes from and what we do when one is wrong.</p>
+    <h2>Responsibility</h2><p>{AUTHOR_NAME} answers for every listing and every calculation. Report data that do not match their source to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.</p>
+    <h2>Order of sources</h2>
+    <ol>
+      <li><strong>Open regional files</strong>: Lombardy (sagre and fairs filed by municipalities), Emilia-Romagna (APT Servizi events), Apulia;</li>
+      <li><strong>Public provincial databases</strong>: the South Tyrol Open Data Hub;</li>
+      <li><strong>Town and Pro Loco websites</strong>, only to check a report.</li>
+    </ol>
+    <p>Other festival websites, social networks and newspaper articles are not a source. A region with no open, current file is not covered.</p>
+    <h2>Read, not copied</h2><p>No listing is typed by hand. A script downloads the files, keeps only upcoming dates, classifies events through fixed rules and writes the source and reading date on every listing. Automated tests check the weekend, distance and opening-day calculations.</p>
+    <h2>Reviews</h2><p>The publisher re-reads the files; a full review at least every {REVIEW_CYCLE_MONTHS} months. The date of the last reading is on every page.</p>
+    <h2>Handling errors</h2>
+    <ol><li>Check against the regional source and the town’s website.</li><li>Listing corrected or removed, filter rule updated if needed.</li><li>New reading date on the pages concerned.</li></ol>
+    <h2>Independence</h2><p>No money from Pro Loco associations, towns or organisers. No paid listings, no affiliate links, no lead forms.</p>
+    <p>See also the <a href={route('method', lang)}>method</a>. Version: {LAST_UPDATED}.</p>
+  </div>
+</PageLayout>

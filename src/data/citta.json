@@ -1,0 +1,191 @@
+[
+{
+"n": "Brescia",
+"r": "lom",
+"lat": 45.5394,
+"lon": 10.2238,
+"righe": 20
+},
+{
+"n": "Cremona",
+"r": "lom",
+"lat": 45.1424,
+"lon": 10.0235,
+"righe": 15
+},
+{
+"n": "Lodi",
+"r": "lom",
+"lat": 45.3136,
+"lon": 9.5027,
+"righe": 2
+},
+{
+"n": "Monza",
+"r": "lom",
+"lat": 45.5841,
+"lon": 9.2741,
+"righe": 39
+},
+{
+"n": "Sondrio",
+"r": "lom",
+"lat": 46.1807,
+"lon": 9.8611,
+"righe": 35
+},
+{
+"n": "Varese",
+"r": "lom",
+"lat": 45.846,
+"lon": 8.8,
+"righe": 2
+},
+{
+"n": "Crema",
+"r": "lom",
+"lat": 45.367,
+"lon": 9.6861,
+"righe": 10
+},
+{
+"n": "Livigno",
+"r": "lom",
+"lat": 46.5286,
+"lon": 10.1287,
+"righe": 63
+},
+{
+"n": "Bolzano",
+"r": "aa",
+"lat": 46.4985,
+"lon": 11.3531,
+"righe": 220
+},
+{
+"n": "Merano",
+"r": "aa",
+"lat": 46.6705,
+"lon": 11.1629,
+"righe": 145
+},
+{
+"n": "Bressanone",
+"r": "aa",
+"lat": 46.7157,
+"lon": 11.6567,
+"righe": 80
+},
+{
+"n": "Brunico",
+"r": "aa",
+"lat": 46.7959,
+"lon": 11.9338,
+"righe": 33
+},
+{
+"n": "Vipiteno",
+"r": "aa",
+"lat": 46.8973,
+"lon": 11.4339,
+"righe": 46
+},
+{
+"n": "San Candido",
+"r": "aa",
+"lat": 46.7325,
+"lon": 12.2821,
+"righe": 40
+},
+{
+"n": "Bologna",
+"r": "er",
+"lat": 44.4954,
+"lon": 11.3417,
+"righe": 12
+},
+{
+"n": "Modena",
+"r": "er",
+"lat": 44.646,
+"lon": 10.926,
+"righe": 13
+},
+{
+"n": "Parma",
+"r": "er",
+"lat": 44.8032,
+"lon": 10.327,
+"righe": 13
+},
+{
+"n": "Reggio Emilia",
+"r": "er",
+"lat": 44.6998,
+"lon": 10.6297,
+"righe": 10
+},
+{
+"n": "Piacenza",
+"r": "er",
+"lat": 45.0522,
+"lon": 9.6932,
+"righe": 14
+},
+{
+"n": "Ferrara",
+"r": "er",
+"lat": 44.8376,
+"lon": 11.6213,
+"righe": 5
+},
+{
+"n": "Ravenna",
+"r": "er",
+"lat": 44.4175,
+"lon": 12.2009,
+"righe": 4
+},
+{
+"n": "Rimini",
+"r": "er",
+"lat": 44.0612,
+"lon": 12.5656,
+"righe": 2
+},
+{
+"n": "Bari",
+"r": "pug",
+"lat": 41.1209,
+"lon": 16.87,
+"righe": 234
+},
+{
+"n": "Lecce",
+"r": "pug",
+"lat": 40.3497,
+"lon": 18.1688,
+"righe": 301
+},
+{
+"n": "Foggia",
+"r": "pug",
+"lat": 41.4629,
+"lon": 15.5463,
+"righe": 26
+},
+{
+"n": "Taranto",
+"r": "pug",
+"lat": 40.4735,
+"lon": 17.235,
+"righe": 139
+},
+{
+"n": "Brindisi",
+"r": "pug",
+"lat": 40.6395,
+"lon": 17.945,
+"righe": 109
+}
+]

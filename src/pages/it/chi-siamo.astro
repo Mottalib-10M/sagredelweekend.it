@@ -1,0 +1,33 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import LegalIdentity from '../../components/LegalIdentity.astro';
+import { route } from '../../i18n/routes';
+import { AUTHOR_NAME, AUTHOR_DESC, CONTACT_EMAIL } from '../../data/site-config';
+import { srcLink } from '../../lib/helpers';
+import { KIT as K } from '../../lib/kit';
+import { profilePageSchema, breadcrumbSchema } from '../../lib/seo';
+const lang = 'it';
+const path = route('about', lang);
+const title = 'Chi pubblica il calendario delle sagre e da dove viene';
+const description = 'Chi pubblica Sagre del Weekend: Radif Partners, editore indipendente senza biglietti né visibilità da vendere. Da dove vengono sagre, fiere e mercatini.';
+const s = (k: string, t: string) => srcLink(k, lang, t);
+---
+<PageLayout title={title} description={description} lang={lang} jsonLd={[profilePageSchema({ path, lang }), breadcrumbSchema([{ name: 'Home', path: route('home', lang) }, { name: 'Chi siamo', path }])]} breadcrumbs={[{ label: 'Chi siamo' }]}>
+  <article class="prose prose-slate max-w-none">
+    <h1>Chi siamo</h1>
+    <p>{AUTHOR_DESC.it}</p>
+    <h2>Perché esiste questo sito</h2>
+    <p>Il venerdì sera si cerca una sagra per la domenica e si trovano liste copiate da un anno all’altro, eventi già passati e pagine piene di pubblicità. Intanto le Regioni pubblicano calendari ufficiali, che quasi nessuno legge perché sono file da scaricare. Qui quei file diventano una ricerca: scegli il weekend e la zona, e vedi che cosa c’è, con la fonte di ogni riga.</p>
+    <h2>Chi lo pubblica</h2>
+    <p>L’editore è {AUTHOR_NAME}, una società che costruisce strumenti a partire da dati pubblici. {AUTHOR_NAME} non è un Comune, una Pro Loco né un ente turistico, non ha legami con le Regioni e non usa stemmi o loghi. Il sito non vende biglietti né inserzioni e non accetta pagamenti per mettere in evidenza una sagra.</p>
+    <LegalIdentity lang={lang} />
+    <h2>Da dove vengono i dati</h2>
+    <p>Dalla <Fragment set:html={s('lom', 'Regione Lombardia')} /> (licenza CC0), dall’<Fragment set:html={s('odh', 'Open Data Hub dell’Alto Adige')} /> (CC0), dall’<Fragment set:html={s('er', 'elenco eventi dell’Emilia-Romagna')} /> e dal file <Fragment set:html={s('pug', '« Cosa fare in Puglia »')} /> (CC BY 4.0). Ultima lettura: {K.dl(K.LETTO_IL, lang, false)}. Come li filtriamo è spiegato nel <a href={route('method', lang)}>metodo</a>.</p>
+    <h2>I tuoi dati</h2>
+    <p>La ricerca gira nel tuo browser. La città che scegli e la posizione, se la condividi, non vengono inviate né salvate. I dettagli sono nell’<a href={route('privacy', lang)}>informativa privacy</a>.</p>
+    <h2>Cosa il sito non fa</h2>
+    <p>Non organizza sagre e non conferma che una sagra si tenga davvero: se il tempo è brutto o il Comune la annulla, lo sa solo la Pro Loco. Non copre le regioni che non pubblicano un calendario aperto.</p>
+    <h2>Scrivici</h2>
+    <p><a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> se una data o un luogo ti sembrano sbagliati.</p>
+  </article>
+</PageLayout>

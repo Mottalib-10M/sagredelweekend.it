@@ -1,0 +1,21 @@
+{
+ "name": "Sagre del Weekend",
+ "short_name": "Sagre del Weekend",
+ "description": "Sagre questo weekend in Lombardia, Alto Adige ed Emilia-Romagna: date dai calendari ufficiali delle Regioni, mercatini di Natale 2026 e sagre per mese.",
+ "start_url": "/it/",
+ "display": "standalone",
+ "background_color": "#ffffff",
+ "theme_color": "#0B6B3A",
+ "icons": [
+  {
+   "src": "/icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png"
+  },
+  {
+   "src": "/icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png"
+  }
+ ]
+}

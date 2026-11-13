@@ -1,0 +1,41 @@
+{
+  "_lisezmoi": "Sources du calendrier : chaque URL a été ouverte le jour de retrieved_at. Les événements eux-mêmes sont dans eventi.json (scripts/dati/build-eventi.py), avec leur date de lecture.",
+  "year": 2026,
+  "retrieved_at": "2026-11-13",
+  "valid_from": "2026-11-13",
+  "valid_to": "2027-12-31",
+  "sources": {
+    "lom": {
+      "url": "https://www.dati.lombardia.it/Attivit-Produttive/Sagre-e-fiere-su-area-pubblica/hs8z-dcey",
+      "label": { "it": "Regione Lombardia, open data « Sagre e fiere su area pubblica » (CC0 1.0)", "en": "Lombardy Region, open data “Sagre e fiere su area pubblica” (CC0 1.0)" }
+    },
+    "odh": {
+      "url": "https://opendatahub.com/",
+      "label": { "it": "Open Data Hub Alto Adige / Südtirol (NOI Techpark), eventi con licenza CC0", "en": "Open Data Hub South Tyrol (NOI Techpark), events under CC0" }
+    },
+    "er": {
+      "url": "https://dati.emilia-romagna.it/dataset/eventi-turismo-emilia-romagna",
+      "label": { "it": "Regione Emilia-Romagna, « Elenco degli eventi a tema turistico attivi » (APT Servizi, CC BY 4.0)", "en": "Emilia-Romagna Region, list of active tourism events (APT Servizi, CC BY 4.0)" }
+    },
+    "pug": {
+      "url": "https://dati.puglia.it/ckan/dataset/cosa-fare-in-puglia-progressivo",
+      "label": { "it": "Regione Puglia, « Cosa fare in Puglia – eventi e attività » (CC BY 4.0)", "en": "Apulia Region, “Cosa fare in Puglia” events and activities (CC BY 4.0)" }
+    },
+    "umbria": {
+      "url": "https://www.dati.gov.it/view-dataset/dataset?id=eventi-e-manifestazioni-in-umbria",
+      "label": { "it": "dati.gov.it, « Eventi e manifestazioni in Umbria » (ultime date nel 2023)", "en": "dati.gov.it, “Eventi e manifestazioni in Umbria” (latest dates in 2023)" }
+    },
+    "datigov": {
+      "url": "https://www.dati.gov.it/",
+      "label": { "it": "dati.gov.it, catalogo nazionale dei dati aperti (AgID)", "en": "dati.gov.it, Italy’s national open-data catalogue (AgID)" }
+    },
+    "cc0": {
+      "url": "https://creativecommons.org/publicdomain/zero/1.0/deed.it",
+      "label": { "it": "Licenza CC0 1.0 Universale", "en": "CC0 1.0 Universal licence" }
+    },
+    "ccby": {
+      "url": "https://creativecommons.org/licenses/by/4.0/deed.it",
+      "label": { "it": "Licenza Creative Commons Attribuzione 4.0 (CC BY 4.0)", "en": "Creative Commons Attribution 4.0 licence (CC BY 4.0)" }
+    }
+  }
+}
