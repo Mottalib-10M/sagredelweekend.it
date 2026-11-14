@@ -4,12 +4,13 @@
  * proposées partent du jour de lecture des fichiers, identiques au build et dans le navigateur.
  */
 import type { MiniSpec } from './mini-types';
-import { cerca, weekend, addDays, fineMese, topComuni, NOME_REGIONE, LETTO_IL, giorniTra, lungo, attivoIl, EVENTI, type Regione, type Tipo } from './engine/eventi';
+import { cerca, weekend, addDays, fineMese, topComuni, NOME_REGIONE, LETTO_IL, OGGI, giorniTra, lungo, attivoIl, type Regione, type Tipo } from './engine/eventi';
+import { periodoParole } from './engine/ricerca';
 
 type Lang = 'it' | 'en';
 const TAG: Record<Lang, string> = { it: 'it-IT', en: 'en-GB' };
 const REG: Array<Regione | ''> = ['', 'lom', 'aa', 'er', 'pug'];
-const regOpts = (lang: Lang) => REG.map((r, i) => ({ value: String(i), label: r ? NOME_REGIONE[r][lang] : (lang === 'it' ? 'Tutte le regioni coperte' : 'All covered regions') }));
+const regOpts = (lang: Lang) => REG.map((r, i) => ({ value: String(i), label: r ? NOME_REGIONE[r][lang] : (lang === 'it' ? 'Tutte e 4 le regioni' : 'All 4 regions') }));
 const COSA: Array<{ it: string; en: string; tipi?: Tipo[] }> = [
   { it: 'Tutto', en: 'Everything' },
   { it: 'Sagre, feste e fiere', en: 'Sagre, festivals and fairs', tipi: ['sagra', 'festa', 'fiera'] },
@@ -17,12 +18,13 @@ const COSA: Array<{ it: string; en: string; tipi?: Tipo[] }> = [
   { it: 'Mercatini e mercati', en: 'Markets', tipi: ['mercato', 'natale'] },
 ];
 const fmtG = (iso: string, lang: Lang, o: Intl.DateTimeFormatOptions) => new Date(`${iso}T12:00:00Z`).toLocaleDateString(TAG[lang], { ...o, timeZone: 'UTC' });
-const mesi = (n: number) => { const out: string[] = []; let y = +LETTO_IL.slice(0, 4), m = +LETTO_IL.slice(5, 7); for (let i = 0; i < n; i++) { out.push(`${y}-${String(m).padStart(2, '0')}`); m++; if (m > 12) { m = 1; y++; } } return out; };
+const mesi = (n: number) => { const out: string[] = []; let y = +OGGI.slice(0, 4), m = +OGGI.slice(5, 7); for (let i = 0; i < n; i++) { out.push(`${y}-${String(m).padStart(2, '0')}`); m++; if (m > 12) { m = 1; y++; } } return out; };
 const MESI = mesi(14);
 const nomeMese = (ym: string, lang: Lang) => { const s = fmtG(`${ym}-15`, lang, { month: 'long', year: 'numeric' }); return s.charAt(0).toUpperCase() + s.slice(1); };
-const WEEKEND = Array.from({ length: 8 }, (_, i) => weekend(addDays(LETTO_IL, i * 7), 0));
+// Les week-ends SUIVANTS : celui-ci est déjà dans l'outil du haut (les testeurs lisaient deux outils identiques).
+const WEEKEND = Array.from({ length: 8 }, (_, i) => weekend(addDays(OGGI, i * 7), 1));
 const letto = (lang: Lang) => (lang === 'it' ? `Calendario dei file regionali letto il ${fmtG(LETTO_IL, lang, { day: 'numeric', month: 'long', year: 'numeric' })}.` : `Calendar from the regional files read on ${fmtG(LETTO_IL, lang, { day: 'numeric', month: 'long', year: 'numeric' })}.`);
-const GIORNI_NATALE = ['2026-11-28', '2026-12-05', '2026-12-08', '2026-12-13', '2026-12-20', '2026-12-24', '2026-12-26', '2026-12-31', '2027-01-06'].filter((d) => d >= LETTO_IL);
+const GIORNI_NATALE = ['2026-11-28', '2026-12-05', '2026-12-08', '2026-12-13', '2026-12-20', '2026-12-24', '2026-12-26', '2026-12-31', '2027-01-06'].filter((d) => d >= OGGI);
 
 const SPECS: Record<string, (lang: Lang) => MiniSpec> = {
   /** Quante sagre in un mese, per regione e tipo. */
@@ -37,7 +39,7 @@ const SPECS: Record<string, (lang: Lang) => MiniSpec> = {
     exemple: (v) => (lang === 'it' ? `Esempio: ${nomeMese(MESI[v.mese] ?? MESI[0], lang)}, ${REG[v.reg] ? NOME_REGIONE[REG[v.reg] as Regione].it : 'tutte le regioni'}` : `Example: ${nomeMese(MESI[v.mese] ?? MESI[0], lang)}, ${REG[v.reg] ? NOME_REGIONE[REG[v.reg] as Regione].en : 'all regions'}`),
     run: (v) => {
       const ym = MESI[v.mese] ?? MESI[0];
-      const dal = `${ym}-01` < LETTO_IL ? LETTO_IL : `${ym}-01`, al = fineMese(ym);
+      const dal = `${ym}-01` < OGGI ? OGGI : `${ym}-01`, al = fineMese(ym);
       const r = (REG[v.reg] || undefined) as Regione | undefined;
       const tutti = cerca({ dal, al, regione: r, tipi: COSA[v.cosa]?.tipi, senzaLunghi: v.cosa !== 3 });
       const top = topComuni(tutti, 1)[0];
@@ -56,7 +58,7 @@ const SPECS: Record<string, (lang: Lang) => MiniSpec> = {
   }),
   /** Un fine settimana preciso : quanti eventi, e dove. */
   weekend: (lang) => ({
-    title: lang === 'it' ? 'Un fine settimana a scelta' : 'Pick a weekend',
+    title: lang === 'it' ? 'Prepara un fine settimana più avanti' : 'Plan a later weekend',
     cta: lang === 'it' ? 'Apri la ricerca completa' : 'Open the full search',
     inputs: [
       { id: 'reg', label: lang === 'it' ? 'Regione' : 'Region', def: 0, options: regOpts(lang) },
@@ -71,7 +73,7 @@ const SPECS: Record<string, (lang: Lang) => MiniSpec> = {
       const dom = tutti.filter((x) => attivoIl(x.e, w.al)).length;
       const top = topComuni(tutti, 1)[0];
       return {
-        head: [lang === 'it' ? 'Eventi nel fine settimana' : 'Events that weekend', String(tutti.length)],
+        head: [lang === 'it' ? `Eventi ${periodoParole(w.dal, w.al, lang)}` : `Events ${periodoParole(w.dal, w.al, lang)}`, String(tutti.length)],
         rows: [
           [lang === 'it' ? 'Aperti il sabato' : 'On the Saturday', String(sab)],
           [lang === 'it' ? 'Aperti la domenica' : 'On the Sunday', String(dom)],
@@ -93,13 +95,14 @@ const SPECS: Record<string, (lang: Lang) => MiniSpec> = {
     run: (v) => {
       const d = GIORNI_NATALE[v.g] ?? GIORNI_NATALE[0];
       const r = (REG[v.reg] || undefined) as Regione | undefined;
-      const aperti = EVENTI.filter((e) => e.t === 'natale' && (!r || e.r === r) && giorniTra(e.dal, e.al) >= 2 && attivoIl(e, d));
-      const ult = aperti.filter((e) => e.al === d).length;
+      // Même compte que le tableau « giorni chiave » et que le texte des pages (tous les mercatini, même d'un jour).
+      const aperti = cerca({ dal: d, al: d, regione: r, tipi: ['natale'] }).map((x) => x.e);
+      const ult = aperti.filter((e) => e.al === d && e.dal < d).length;
       const piuLungo = [...aperti].sort((a, b) => b.al.localeCompare(a.al))[0];
       return {
         head: [lang === 'it' ? 'Mercatini di Natale aperti' : 'Christmas markets open', String(aperti.length)],
         rows: [
-          [lang === 'it' ? 'All’ultimo giorno' : 'On their last day', String(ult)],
+          [lang === 'it' ? 'Chiudono proprio quel giorno' : 'Closing that very day', String(ult)],
           [lang === 'it' ? 'Aperto più a lungo' : 'Stays open longest', piuLungo ? `${piuLungo.c}, ${fmtG(piuLungo.al, lang, { day: 'numeric', month: 'short' })}` : '–'],
         ],
         note: letto(lang),
@@ -114,7 +117,7 @@ const SPECS: Record<string, (lang: Lang) => MiniSpec> = {
     exemple: (v) => `${lang === 'it' ? 'Esempio' : 'Example'}: ${nomeMese(MESI[v.mese] ?? MESI[0], lang)}`,
     run: (v) => {
       const ym = MESI[v.mese] ?? MESI[0];
-      const dal = `${ym}-01` < LETTO_IL ? LETTO_IL : `${ym}-01`, al = fineMese(ym);
+      const dal = `${ym}-01` < OGGI ? OGGI : `${ym}-01`, al = fineMese(ym);
       const tutti = cerca({ dal, al, testo: /tartuf|trüffel|truffle/i });
       const reg = (r: Regione) => String(tutti.filter((x) => x.e.r === r).length);
       return {
@@ -135,7 +138,7 @@ const SPECS: Record<string, (lang: Lang) => MiniSpec> = {
     exemple: (v) => `${lang === 'it' ? 'Esempio' : 'Example'}: ${(REG[v.reg] ? NOME_REGIONE[REG[v.reg] as Regione][lang] : (lang === 'it' ? 'tutte le regioni' : 'all regions'))}, ${nomeMese(MESI[v.mese] ?? MESI[0], lang)}`,
     run: (v) => {
       const ym = MESI[v.mese] ?? MESI[0];
-      const dal = `${ym}-01` < LETTO_IL ? LETTO_IL : `${ym}-01`, al = fineMese(ym);
+      const dal = `${ym}-01` < OGGI ? OGGI : `${ym}-01`, al = fineMese(ym);
       const r = (REG[v.reg] || undefined) as Regione | undefined;
       const tutti = cerca({ dal, al, regione: r, senzaLunghi: true });
       const uno = tutti.filter((x) => x.e.dal === x.e.al).length;
@@ -147,7 +150,7 @@ const SPECS: Record<string, (lang: Lang) => MiniSpec> = {
           [lang === 'it' ? 'Un giorno solo' : 'Single day', String(uno)],
           [lang === 'it' ? 'Due o tre giorni' : 'Two or three days', String(due3)],
           [lang === 'it' ? 'Quattro giorni o più' : 'Four days or more', String(piu)],
-          [lang === 'it' ? 'Stagioni lunghe escluse' : 'Long seasons left out', String(cerca({ dal, al, regione: r }).filter((x) => lungo(x.e)).length)],
+          [lang === 'it' ? 'Mercati di ogni settimana ed eventi di mesi, esclusi' : 'Weekly markets and months-long events, left out', String(cerca({ dal, al, regione: r }).filter((x) => lungo(x.e)).length)],
         ],
         note: letto(lang),
       };

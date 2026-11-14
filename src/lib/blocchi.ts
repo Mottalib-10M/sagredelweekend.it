@@ -1,9 +1,10 @@
 /** Blocs calculés, partagés par plusieurs pages (tableaux : hors du contrôle d'unicité). */
 import type { Helpers } from './page-types';
-import { cerca, perMese, topComuni, NOME_TIPO, NOME_REGIONE, LETTO_IL, type Filtro, type Evento, type Regione } from './engine/eventi';
+import { cerca, perMese, topComuni, NOME_TIPO, NOME_REGIONE, OGGI, type Filtro, type Evento, type Regione } from './engine/eventi';
+import { nomeVisibile, schemaApertura } from './engine/ricerca';
 
-const nome = (e: Evento, h: Helpers) => (h.lang === 'en' && e.en ? e.en : e.n);
-export const quando = (e: Evento, h: Helpers) => (e.dal === e.al ? h.dm(e.dal) : `${h.dm(e.dal < LETTO_IL ? LETTO_IL : e.dal)} – ${h.dm(e.al)}`);
+const nome = (e: Evento, h: Helpers) => nomeVisibile(e, h.lang);
+export const quando = (e: Evento, h: Helpers) => (e.dal === e.al ? h.dm(e.dal) : `${h.dm(e.dal < OGGI ? OGGI : e.dal)} – ${h.dm(e.al)}`);
 
 /** Tableau d'événements : date, nom, commune, type. */
 export function tabEventi(h: Helpers, f: Filtro, cap: string, max = 25) {
@@ -30,18 +31,13 @@ export function tabRegioni(h: Helpers, f: Omit<Filtro, 'regione'>, cap: string) 
 /** Mercatini di Natale aperti nei giorni chiave dell'Avvento, per regione. */
 export const GIORNI_CHIAVE = ['2026-11-28', '2026-12-05', '2026-12-08', '2026-12-13', '2026-12-20', '2026-12-24', '2026-12-25', '2026-12-26', '2026-12-31', '2027-01-06'];
 export function tabGiorniNatale(h: Helpers, regioni: Regione[], cap: string) {
-  const rows = GIORNI_CHIAVE.filter((d) => d >= LETTO_IL).map((d) => [h.wday(d).replace(/ \d{4}$/, ''), ...regioni.map((r) => cerca({ dal: d, al: d, regione: r, tipi: ['natale'] }).length)]);
+  const rows = GIORNI_CHIAVE.filter((d) => d >= OGGI).map((d) => [h.wday(d).replace(/ \d{4}$/, ''), ...regioni.map((r) => cerca({ dal: d, al: d, regione: r, tipi: ['natale'] }).length)]);
   return h.table([h.T('Giorno', 'Day'), ...regioni.map((r) => NOME_REGIONE[r][h.lang])], rows, cap, ['l', ...regioni.map(() => 'r' as const)]);
 }
-/** Grandi mercatini (almeno 3 giorni) : apertura, chiusura, giorni di chiusura dichiarati. */
+/** Grandi mercatini (au moins une semaine) : ouverture, fermeture, jours d'ouverture dits en mots (« solo sabato e domenica »). */
 export function tabGrandiMercatini(h: Helpers, regione: Regione | '', cap: string, max = 20) {
-  const l = cerca({ dal: LETTO_IL, al: '2027-01-31', regione, tipi: ['natale'] }).map((x) => x.e).filter((e) => (Date.parse(e.al) - Date.parse(e.dal)) / 864e5 >= 6 && !/intrattenimento|musica|inaugurazione|in autobus|stand gastronom/i.test(e.n))
+  const l = cerca({ dal: OGGI, al: '2027-01-31', regione, tipi: ['natale'] }).map((x) => x.e).filter((e) => (Date.parse(e.al) - Date.parse(e.dal)) / 864e5 >= 6 && !/intrattenimento|musica|inaugurazione|in autobus|stand gastronom/i.test(e.n))
     .sort((a, b) => a.dal.localeCompare(b.dal) || a.c.localeCompare(b.c)).slice(0, max);
-  const chiusi = (e: Evento) => {
-    if (!e.g) return h.T('nessuno dichiarato', 'none declared');
-    const out: string[] = []; for (let d = e.dal; d <= e.al; d = new Date(Date.parse(`${d}T12:00:00Z`) + 864e5).toISOString().slice(0, 10)) if (!e.g.includes(d)) out.push(h.dm(d));
-    return out.length > 4 ? h.T(`${out.length} giorni`, `${out.length} days`) : out.join(', ') || h.T('nessuno', 'none');
-  };
-  return h.table([h.T('Mercatino', 'Market'), h.T('Comune', 'Town'), h.T('Apre', 'Opens'), h.T('Chiude', 'Closes'), h.T('Giorni di chiusura', 'Closed on')],
-    l.map((e) => [nome(e, h), e.c, h.dm(e.dal < LETTO_IL ? LETTO_IL : e.dal), h.dm(e.al), chiusi(e)]), cap);
+  return h.table([h.T('Mercatino', 'Market'), h.T('Comune', 'Town'), h.T('Apre', 'Opens'), h.T('Chiude', 'Closes'), h.T('Giorni di apertura', 'Open on')],
+    l.map((e) => [nome(e, h), e.c, h.dm(e.dal < OGGI ? OGGI : e.dal), h.dm(e.al), schemaApertura(e, h.lang)]), cap);
 }

@@ -11,9 +11,13 @@ const nW = K.cerca({ ...K.weekend(G, 0), testo: RE_T }).length;
 const ultimo = tutti.reduce((m, x) => (x.e.al > m ? x.e.al : m), G);
 const nGiorni = tutti.filter((x) => x.e.g).length;
 
+// Le chiffre de l'outil (30 jours), écrit en tête du texte avec sa période : un seul chiffre par objet.
+const PRESET = { cosa: 'tartufo', periodo: '30' } as const;
+const S30 = K.ricerca(PRESET);
+
 export default definePage({
   id: 'tartufo', group: 'regioni', order: 13,
-  tool: { kind: 'trova', preset: { cosa: 'tartufo', periodo: '30' } },
+  tool: { kind: 'trova', preset: PRESET },
   related: ['emilia-romagna', 'novembre', 'vicino'],
   sources: ['er', 'lom'],
   it: {
@@ -22,7 +26,7 @@ export default definePage({
     description: 'Sagra del tartufo vicino a te: fiere e feste del tartufo in Emilia-Romagna e in Lombardia nei file ufficiali delle Regioni, con giorni di apertura e fonte.',
     h1: 'Sagra del tartufo: dove e in quali giorni',
     intro: 'Ogni sagra del tartufo presente nei file delle Regioni coperte, con i giorni in cui è aperta: scegli il periodo.',
-    resume: `Una sagra del tartufo nei file regionali è quasi sempre emiliano-romagnola: dal ${K.dl(G, 'it', false)} ne contiamo ${nT}, di cui ${nER} nell’elenco di APT Servizi, fra l’Appennino bolognese e reggiano, il Ferrarese e la Romagna. La stagione nel calendario finisce il ${K.dl(ultimo, 'it', false)}. Nel weekend della lettura erano aperte ${nW} feste. ${nGiorni} di queste fiere sono aperte solo in giorni precisi, di solito il sabato e la domenica: la ricerca le mostra solo in quei giorni. Le fiere più note d’Italia, come Alba in Piemonte, Acqualagna nelle Marche o San Miniato in Toscana, si tengono in regioni di cui non abbiamo un file aperto e aggiornato: non compaiono qui, e non le copiamo da altri siti senza una fonte ufficiale.`,
+    resume: `Nei prossimi 30 giorni, ${K.periodoParole(S30.dal, S30.al, 'it')}, gli eventi sul tartufo in calendario sono ${S30.lista.length}. Una sagra del tartufo nei file regionali è quasi sempre emiliano-romagnola: dal ${K.dl(G, 'it', false)} ne contiamo ${nT}, di cui ${nER} nell’elenco di APT Servizi, fra l’Appennino bolognese e reggiano, il Ferrarese e la Romagna. La stagione nel calendario finisce il ${K.dl(ultimo, 'it', false)}. Nel weekend della lettura erano aperte ${nW} feste. ${nGiorni} di queste fiere sono aperte solo in giorni precisi, di solito il sabato e la domenica: la ricerca le mostra solo in quei giorni. Le fiere più note d’Italia, come Alba in Piemonte, Acqualagna nelle Marche o San Miniato in Toscana, si tengono in regioni di cui non abbiamo un file aperto e aggiornato: non compaiono qui, e non le copiamo da altri siti senza una fonte ufficiale.`,
     faqs: [
       { q: 'Perché non trovo la fiera del tartufo di Alba?', a: 'Perché Alba è in Piemonte, e per il Piemonte non disponiamo di un file aperto e aggiornato degli eventi. Il sito pubblica solo eventi letti nei file regionali, con la fonte. Per Alba, Acqualagna o San Miniato fa fede il sito ufficiale della fiera o del Comune.' },
       { q: 'Il tartufo bianco si trova in Emilia-Romagna?', a: 'Sì. Il tartufo bianco pregiato si raccoglie anche nell’Appennino emiliano-romagnolo, per esempio nella valle del Bidente in Romagna, dove si tiene una delle sagre del file regionale. Le fiere di questa zona si concentrano fra ottobre e novembre, nella stagione di raccolta del bianco.' },
@@ -43,7 +47,7 @@ ${h.mini('tartufo', { d: { mese: 0 } })}
     description: 'Truffle festivals in Italy near you: the truffle fairs and feasts of Emilia-Romagna and Lombardy in the official regional files, with opening days and source.',
     h1: 'Truffle festivals in Italy: where and on which days',
     intro: 'Every truffle festival in the covered regions’ files, with the days it is open: choose the period.',
-    resume: `Truffle festivals in Italy’s regional open data are almost all in Emilia-Romagna: from ${K.dl(G, 'en', false)} we count ${nT}, ${nER} of them in APT Servizi’s list, across the Bologna and Reggio Apennines, the Ferrara area and Romagna. The calendar’s season ends on ${K.dl(ultimo, 'en', false)}. On the weekend we read the files, ${nW} were open. ${nGiorni} of these fairs open only on specific days, usually Saturday and Sunday: the search shows them on those days alone. Italy’s best-known fairs, such as Alba in Piedmont, Acqualagna in the Marche or San Miniato in Tuscany, are in regions for which we have no open, current file: they do not appear here, and we do not copy them from other websites without an official source.`,
+    resume: `In the next 30 days, ${K.periodoParole(S30.dal, S30.al, 'en')}, the calendar lists ${S30.lista.length} events about truffles. Truffle festivals in Italy’s regional open data are almost all in Emilia-Romagna: from ${K.dl(G, 'en', false)} we count ${nT}, ${nER} of them in APT Servizi’s list, across the Bologna and Reggio Apennines, the Ferrara area and Romagna. The calendar’s season ends on ${K.dl(ultimo, 'en', false)}. On the weekend we read the files, ${nW} were open. ${nGiorni} of these fairs open only on specific days, usually Saturday and Sunday: the search shows them on those days alone. Italy’s best-known fairs, such as Alba in Piedmont, Acqualagna in the Marche or San Miniato in Tuscany, are in regions for which we have no open, current file: they do not appear here, and we do not copy them from other websites without an official source.`,
     faqs: [
       { q: 'Why can’t I find the Alba truffle fair?', a: 'Because Alba is in Piedmont, and we have no open, current events file for Piedmont. The site only publishes events read in regional files, with their source. For Alba, Acqualagna or San Miniato, the fair’s or the town’s official website is the reference.' },
       { q: 'Is white truffle found in Emilia-Romagna?', a: 'Yes. The prized white truffle is also gathered in the Emilia-Romagna Apennines, for example in the Bidente valley in Romagna, home to one of the sagre in the regional file. Fairs in this area cluster in October and November, the white truffle season.' },

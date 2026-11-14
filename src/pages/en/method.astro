@@ -40,6 +40,6 @@ const ultimo = K.EVENTI.reduce((m, e) => (e.al > m ? e.al : m), K.OGGI);
     <p>The calendar covers Lombardy, South Tyrol, Emilia-Romagna and a few events in Apulia. For other regions we have no open, up-to-date file of sagre, so we have no pages on them. We cannot know about a sagra the municipality did not file, or one cancelled after filing. Check the Pro Loco’s or the town’s website before setting off.</p>
 
     <h2>Updates</h2>
-    <p>The publisher re-reads the files by hand; the date of the last reading is written on every page and next to every search. Report errors through the <a href={route('contact', lang)}>contact page</a>; how we correct them is set out in the <a href={route('editorial', lang)}>editorial policy</a>.</p>
+    <p>Every morning a script downloads the regional files again and rebuilds the calendar; the date of the last reading is written on every page and next to every search. Report errors through the <a href={route('contact', lang)}>contact page</a>; how we correct them is set out in the <a href={route('editorial', lang)}>editorial policy</a>.</p>
   </article>
 </PageLayout>

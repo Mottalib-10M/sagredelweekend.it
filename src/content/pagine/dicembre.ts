@@ -3,7 +3,7 @@ import { KIT as K } from '../../lib/kit';
 import { tabRegioni, tabEventi } from '../../lib/blocchi';
 
 const DIC = { dal: '2026-12-01', al: '2026-12-31', senzaLunghi: true };
-const nDic = K.conta(DIC);
+const nDic = K.contaStrumento({ periodo: 'm2026-12' }); // = l'outil de la page
 const conta = (re: RegExp) => K.conta({ ...DIC, testo: re });
 const nLucia = conta(/lucia/i);
 const nImm = K.conta({ dal: '2026-12-08', al: '2026-12-08', senzaLunghi: true });

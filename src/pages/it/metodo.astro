@@ -40,6 +40,6 @@ const ultimo = K.EVENTI.reduce((m, e) => (e.al > m ? e.al : m), K.OGGI);
     <p>Il calendario copre la Lombardia, l’Alto Adige, l’Emilia-Romagna e qualche evento in Puglia. Per le altre regioni non disponiamo di un file aperto e aggiornato delle sagre: non abbiamo pagine su di loro. Una sagra che il Comune non ha comunicato alla Regione, o che è stata annullata dopo la comunicazione, non lo sappiamo. Prima di partire controlla sul sito della Pro Loco o del Comune.</p>
 
     <h2>Aggiornamento</h2>
-    <p>I file vengono riletti a mano dall’editore; la data dell’ultima lettura è scritta su ogni pagina e accanto a ogni ricerca. Gli errori si segnalano dalla pagina <a href={route('contact', lang)}>contatti</a>; come correggiamo è scritto nella <a href={route('editorial', lang)}>politica editoriale</a>.</p>
+    <p>Ogni mattina uno script scarica di nuovo i file delle Regioni e rifà il calendario; la data dell’ultima lettura è scritta su ogni pagina e accanto a ogni ricerca. Gli errori si segnalano dalla pagina <a href={route('contact', lang)}>contatti</a>; come correggiamo è scritto nella <a href={route('editorial', lang)}>politica editoriale</a>.</p>
   </article>
 </PageLayout>

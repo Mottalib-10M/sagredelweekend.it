@@ -4,7 +4,7 @@ import { tabRegioni, tabEventi } from '../../lib/blocchi';
 
 const G = K.OGGI;
 const NOV = { dal: G, al: '2026-11-30', senzaLunghi: true };
-const nNov = K.conta(NOV);
+const nNov = K.contaStrumento({ periodo: 'm2026-11' }); // = l'outil de la page
 const conta = (re: RegExp) => K.conta({ ...NOV, testo: re });
 const nMartino = conta(/martin/i);
 const nRingr = conta(/ringraziament/i);

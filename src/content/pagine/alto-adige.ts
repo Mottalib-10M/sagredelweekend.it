@@ -14,9 +14,13 @@ const nBreve = AA.filter((e) => !K.lungo(e)).length;
 const dic = { dal: '2026-12-01', al: '2026-12-08' };
 const nPrimiDic = K.cerca({ ...dic, regione: 'aa', testo: /krampus|nicol[oò]|micur/i }).length;
 
+// Le chiffre de l'outil (30 jours), écrit en tête du texte avec sa période : un seul chiffre par objet.
+const PRESET = { regione: 'aa', periodo: '30' } as const;
+const S30 = K.ricerca(PRESET);
+
 export default definePage({
   id: 'alto-adige', group: 'regioni', order: 11,
-  tool: { kind: 'trova', preset: { regione: 'aa', periodo: '30' } },
+  tool: { kind: 'trova', preset: PRESET },
   related: ['natale-alto-adige', 'mercati', 'vicino'],
   sources: ['odh', 'cc0'],
   it: {
@@ -25,7 +29,7 @@ export default definePage({
     description: 'Feste in Alto Adige dall’Open Data Hub della Provincia: sfilate dei Krampus, Törggelen, feste di paese e mercati contadini, con data, orario, paese e fonte.',
     h1: 'Feste in Alto Adige, paese per paese',
     intro: 'Le feste in Alto Adige pubblicate dalle associazioni turistiche: scegli il periodo e il tipo di evento.',
-    resume: `Le feste in Alto Adige del calendario vengono dall’Open Data Hub, la banca dati pubblica della Provincia di Bolzano gestita dal NOI Techpark, dove le associazioni turistiche inseriscono i loro eventi con licenza CC0. Su ${K.FONTI.odh_schede} schede lette il ${K.dl(K.LETTO_IL, 'it', false)} ne abbiamo tenute ${nAA}: feste di paese, ${nNatale} mercatini di Natale e ${nMercati} mercati contadini o settimanali. ${nKrampus} eventi riguardano San Nicolò e i Krampus, i diavoli che sfilano nei paesi fra fine novembre e il 6 dicembre; ${nTorggelen} il Törggelen, la stagione autunnale delle castagne e del vino nuovo nei masi. Gli orari sono quasi sempre indicati. I nomi dei paesi sono in italiano quando la scheda li ha in italiano, altrimenti in tedesco o ladino, le tre lingue della provincia.`,
+    resume: `Nei prossimi 30 giorni, ${K.periodoParole(S30.dal, S30.al, 'it')}, gli eventi in Alto Adige in calendario sono ${S30.lista.length}. Le feste in Alto Adige del calendario vengono dall’Open Data Hub, la banca dati pubblica della Provincia di Bolzano gestita dal NOI Techpark, dove le associazioni turistiche inseriscono i loro eventi con licenza CC0. Su ${K.FONTI.odh_schede} schede lette il ${K.dl(K.LETTO_IL, 'it', false)} ne abbiamo tenute ${nAA}: feste di paese, ${nNatale} mercatini di Natale e ${nMercati} mercati contadini o settimanali. ${nKrampus} eventi riguardano San Nicolò e i Krampus, i diavoli che sfilano nei paesi fra fine novembre e il 6 dicembre; ${nTorggelen} il Törggelen, la stagione autunnale delle castagne e del vino nuovo nei masi. Gli orari sono quasi sempre indicati. I nomi dei paesi sono in italiano quando la scheda li ha in italiano, altrimenti in tedesco o ladino, le tre lingue della provincia.`,
     faqs: [
       { q: 'Che cosa sono le sfilate dei Krampus?', a: 'Sono cortei serali in cui giovani travestiti da diavoli, con maschere di legno e campanacci, accompagnano San Nicolò per le vie del paese. Si tengono soprattutto fra fine novembre e il 6 dicembre. Nei file le trovi con il nome «Sfilata dei Krampus» o «San Nicolò»; l’orario indicato è quello di partenza del corteo.' },
       { q: 'Che cos’è il Törggelen?', a: 'È l’usanza autunnale altoatesina di andare nei masi e nelle cantine ad assaggiare il vino nuovo con castagne arrostite, speck e piatti contadini. Va da ottobre all’Avvento. Nell’Open Data Hub compare come evento di singole tenute o paesi, spesso con prenotazione: controlla la scheda prima di partire.' },
@@ -50,7 +54,7 @@ ${tabEventi(h, { dal: G, al: '2026-12-13', regione: 'aa', testo: /krampus|nicol[
     description: 'Festivals in South Tyrol from the Province’s Open Data Hub: Krampus parades, Törggelen, village feasts and farmers’ markets, with date, time and source.',
     h1: 'Festivals in South Tyrol, village by village',
     intro: 'Festivals in South Tyrol published by local tourist associations: choose the period and type of event.',
-    resume: `The calendar’s festivals in South Tyrol come from the Open Data Hub, the public database of the Province of Bolzano run by NOI Techpark, where tourist associations enter their events under a CC0 licence. Of ${K.FONTI.odh_schede} listings read on ${K.dl(K.LETTO_IL, 'en', false)} we kept ${nAA}: village feasts, ${nNatale} Christmas markets and ${nMercati} farmers’ or weekly markets. ${nKrampus} events concern St Nicholas and the Krampus, the devil figures who parade through villages from late November to 6 December; ${nTorggelen} concern Törggelen, the autumn season of chestnuts and new wine at farmhouses. Times are almost always given. Village names appear in Italian when the listing has them in Italian, otherwise in German or Ladin, the three languages of the province, so a village may appear as Siusi or Seis.`,
+    resume: `In the next 30 days, ${K.periodoParole(S30.dal, S30.al, 'en')}, the calendar lists ${S30.lista.length} events in South Tyrol. The calendar’s festivals in South Tyrol come from the Open Data Hub, the public database of the Province of Bolzano run by NOI Techpark, where tourist associations enter their events under a CC0 licence. Of ${K.FONTI.odh_schede} listings read on ${K.dl(K.LETTO_IL, 'en', false)} we kept ${nAA}: village feasts, ${nNatale} Christmas markets and ${nMercati} farmers’ or weekly markets. ${nKrampus} events concern St Nicholas and the Krampus, the devil figures who parade through villages from late November to 6 December; ${nTorggelen} concern Törggelen, the autumn season of chestnuts and new wine at farmhouses. Times are almost always given. Village names appear in Italian when the listing has them in Italian, otherwise in German or Ladin, the three languages of the province, so a village may appear as Siusi or Seis.`,
     faqs: [
       { q: 'What are Krampus parades?', a: 'They are evening processions in which young people dressed as devils, with carved wooden masks and cowbells, escort St Nicholas through the village streets. Most take place between late November and 6 December. In the files they appear as “Sfilata dei Krampus” or “San Nicolò”; the time given is when the procession sets off.' },
       { q: 'What is Törggelen?', a: 'It is South Tyrol’s autumn custom of visiting farmhouses and wineries to taste the new wine with roast chestnuts, speck and farm dishes. It runs from October to Advent. In the Open Data Hub it shows up as events at individual estates or villages, often requiring a booking: check the listing before you go.' },

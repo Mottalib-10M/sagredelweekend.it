@@ -1,8 +1,13 @@
 import { definePage } from '../../lib/page-types';
 import { KIT as K } from '../../lib/kit';
-import { tabGiorniNatale, tabEventi } from '../../lib/blocchi';
+import { tabGiorniNatale } from '../../lib/blocchi';
 
-const NAT = K.EVENTI.filter((e) => e.t === 'natale' && e.r === 'lom');
+// Les mercatini de la page = ceux que montre l'outil (toute la saison) : un seul chiffre, avec sa période.
+const PRESET = { cosa: 'natale', regione: 'lom', periodo: 'natale' } as const;
+const S = K.ricerca(PRESET);
+const NAT = S.lista.map((x) => x.e);
+/** Giorno per giorno : les communes de chaque date (la liste de l'outil, regroupée, et non répétée). */
+const perGiorno = Object.entries(NAT.reduce<Record<string, string[]>>((m, e) => { if (e.dal === e.al) (m[e.dal] ??= []).push(e.c); return m; }, {})).sort((a, b) => a[0].localeCompare(b[0]));
 const nL = NAT.length;
 const nUno = NAT.filter((e) => e.dal === e.al).length;
 const prov = Object.entries(NAT.reduce<Record<string, number>>((m, e) => { if (e.p) m[e.p] = (m[e.p] ?? 0) + 1; return m; }, {})).sort((a, b) => b[1] - a[1]);
@@ -13,7 +18,7 @@ const FIERE_NAT = K.cerca({ dal: K.OGGI, al: '2027-01-06', regione: 'lom', tipi:
 
 export default definePage({
   id: 'natale-lombardia', group: 'natale', order: 22,
-  tool: { kind: 'trova', preset: { cosa: 'natale', regione: 'lom', periodo: 'm2026-12' } },
+  tool: { kind: 'trova', preset: PRESET },
   related: ['natale-2026', 'lombardia', 'fiere'],
   sources: ['lom', 'cc0'],
   it: {
@@ -21,16 +26,16 @@ export default definePage({
     title: 'Mercatini di Natale in Lombardia 2026: paesi, date e orari',
     description: 'Mercatini di Natale in Lombardia 2026 dal calendario dei Comuni alla Regione: i paesi, le domeniche di dicembre e gli orari di ogni mercatino, con la fonte.',
     h1: 'Mercatini di Natale in Lombardia, domenica per domenica',
-    intro: 'I mercatini di Natale in Lombardia comunicati dai Comuni alla Regione: scegli il giorno o la città vicina.',
-    resume: `I mercatini di Natale in Lombardia del calendario sono ${nL}, comunicati dai Comuni alla Regione come eventi su area pubblica e letti il ${K.dl(K.LETTO_IL, 'it', false)}. ${nUno} durano un solo giorno: è il modello lombardo, una domenica di bancarelle in piazza organizzata dalla Pro Loco, dall’oratorio o dai commercianti, con orari dalla mattina alla sera. Il giorno con più mercatini è il ${K.dl(giornoTop, 'it')}, con ${nTop}. La provincia di Brescia ne conta ${nBS}. Oltre ai mercatini veri e propri, il file elenca ${FIERE_NAT} fiere e feste di dicembre legate al Natale, a Santa Lucia o all’Immacolata, come la Fiera di Natale di Lissone o il Villaggio di Babbo Natale di Assago. I grandi mercatini delle città capoluogo, quando non sono comunicati come sagra o fiera, non compaiono.`,
+    intro: 'I mercatini di Natale in Lombardia comunicati dai Comuni alla Regione, da oggi all’Epifania: scegli il periodo, o restringi a un mese.',
+    resume: `${K.periodoParole(S.dal, S.al, 'it').replace(/^d/, 'D')} i mercatini di Natale in Lombardia del calendario sono ${nL}, comunicati dai Comuni alla Regione come eventi su area pubblica e letti il ${K.dl(K.LETTO_IL, 'it', false)}. ${nUno} durano un solo giorno: è il modello lombardo, una domenica di bancarelle in piazza organizzata dalla Pro Loco, dall’oratorio o dai commercianti, con orari dalla mattina alla sera. Il giorno con più mercatini è il ${K.dl(giornoTop, 'it')}, con ${nTop}. La provincia di Brescia ne conta ${nBS}. Oltre ai mercatini veri e propri, il file elenca ${FIERE_NAT} fiere e feste di dicembre legate al Natale, a Santa Lucia o all’Immacolata, come la Fiera di Natale di Lissone o il Villaggio di Babbo Natale di Assago. I grandi mercatini delle città capoluogo, quando non sono comunicati come sagra o fiera, non compaiono.`,
     faqs: [
       { q: 'Perché in Lombardia i mercatini durano un giorno solo?', a: 'Perché quasi tutti quelli del file sono mercatini di paese organizzati dal Comune, dalla Pro Loco o dall’oratorio, che occupano la piazza per una giornata. I mercatini di più giorni, come quello di Galbiate dal 29 novembre al 7 dicembre o quello di Urgnano a Basella, sono l’eccezione.' },
       { q: 'Ci sono i mercatini di Natale di Milano?', a: 'Nel file regionale non compaiono mercatini di Natale nel comune di Milano, perché la città li autorizza con altre procedure. Nella provincia ci sono feste e fiere di dicembre, come Assago e Paderno Dugnano. Per i mercatini milanesi il riferimento resta il sito del Comune di Milano.' },
       { q: 'Gli orari dei mercatini lombardi sono affidabili?', a: 'Sono quelli che il Comune ha comunicato alla Regione, con l’ora di inizio e di fine. Alcuni Comuni indicano orari tecnici, come fino alle 23.59, che coprono anche lo smontaggio. Per sapere quando le bancarelle sono davvero aperte, guarda il programma linkato sotto l’evento.' },
     ],
     body: (h) => `
-<h2>Mercatini di Natale in Lombardia, tutti i giorni in calendario</h2>
-${tabEventi(h, { dal: K.OGGI, al: '2027-01-06', regione: 'lom', tipi: ['natale'] }, 'Mercatini di Natale comunicati dai Comuni lombardi', 30)}
+<h2>Mercatini di Natale in Lombardia, giorno per giorno</h2>
+${h.table(['Giorno', 'Mercatini', 'Paesi'], perGiorno.map(([d, c]) => [h.wday(d).replace(/ \d{4}$/, ''), c.length, [...new Set(c)].join(', ')]), 'Mercatini di un giorno comunicati dai Comuni lombardi, per data', ['l', 'r', 'l'])}
 <p>La prima domenica di dicembre e l’8 dicembre sono i giorni più pieni. Quasi tutti i paesi sono piccoli: Sarezzo, Castegnato, Verolavecchia, Paitone nel Bresciano, Primaluna e Galbiate nel Lecchese, Varano Borghi e Caronno Varesino nel Varesotto.</p>
 ${h.mini('natale', { d: { reg: 1, g: 2 } })}
 <h2>Quanti mercatini nei giorni chiave</h2>
@@ -42,16 +47,16 @@ ${tabGiorniNatale(h, ['lom'], 'Mercatini lombardi aperti nei giorni chiave')}
     title: 'Christmas Markets in Lombardy 2026: Towns, Dates and Hours',
     description: 'Christmas markets in Lombardy 2026 from the calendar towns file with the Region: the towns, the Sundays in December and each market’s hours, with the source.',
     h1: 'Christmas markets in Lombardy, Sunday by Sunday',
-    intro: 'Christmas markets in Lombardy filed by municipalities with the Region: choose the day or a nearby town.',
-    resume: `The calendar holds ${nL} Christmas markets in Lombardy, filed by municipalities with the Region as events on public land and read on ${K.dl(K.LETTO_IL, 'en', false)}. ${nUno} last a single day: that is the Lombard pattern, one Sunday of stalls in the square run by the Pro Loco, the parish youth centre or local shops, open from morning to evening. The busiest day is ${K.dl(giornoTop, 'en')}, with ${nTop}. The province of Brescia accounts for ${nBS}. Besides the markets themselves, the file lists ${FIERE_NAT} December fairs and feasts tied to Christmas, St Lucy or the Immaculate Conception on 8 December, such as Lissone’s Christmas fair or the Santa Claus village at Assago. Large markets in provincial capitals do not appear unless filed as a sagra or fair.`,
+    intro: 'Christmas markets in Lombardy filed by municipalities with the Region, from today to Epiphany: choose the period, or narrow it to a month.',
+    resume: `${K.periodoParole(S.dal, S.al, 'en').replace(/^f/, 'F')} the calendar holds ${nL} Christmas markets in Lombardy, filed by municipalities with the Region as events on public land and read on ${K.dl(K.LETTO_IL, 'en', false)}. ${nUno} last a single day: that is the Lombard pattern, one Sunday of stalls in the square run by the Pro Loco, the parish youth centre or local shops, open from morning to evening. The busiest day is ${K.dl(giornoTop, 'en')}, with ${nTop}. The province of Brescia accounts for ${nBS}. Besides the markets themselves, the file lists ${FIERE_NAT} December fairs and feasts tied to Christmas, St Lucy or the Immaculate Conception on 8 December, such as Lissone’s Christmas fair or the Santa Claus village at Assago. Large markets in provincial capitals do not appear unless filed as a sagra or fair.`,
     faqs: [
       { q: 'Why do Lombardy’s markets last just one day?', a: 'Because almost all those in the file are village markets run by the municipality, the Pro Loco or the parish, taking over the square for a day. Multi-day markets, such as Galbiate’s from 29 November to 7 December or Urgnano’s at Basella, are the exception.' },
       { q: 'Are Milan’s Christmas markets included?', a: 'No Christmas market in the municipality of Milan appears in the regional file, because the city licenses them under other procedures. The province has December fairs and feasts, such as Assago and Paderno Dugnano. For Milan’s markets, the City of Milan’s website remains the reference.' },
       { q: 'Are the hours of Lombard markets reliable?', a: 'They are the hours the municipality filed with the Region, with start and end times. Some towns give technical hours, such as until 23.59, which include dismantling. To know when the stalls are really open, look at the programme linked under the event.' },
     ],
     body: (h) => `
-<h2>Christmas markets in Lombardy, every day in the calendar</h2>
-${tabEventi(h, { dal: K.OGGI, al: '2027-01-06', regione: 'lom', tipi: ['natale'] }, 'Christmas markets filed by Lombard municipalities', 30)}
+<h2>Christmas markets in Lombardy, day by day</h2>
+${h.table(['Day', 'Markets', 'Towns'], perGiorno.map(([d, c]) => [h.wday(d).replace(/ \d{4}$/, ''), c.length, [...new Set(c)].join(', ')]), 'One-day markets filed by Lombard municipalities, by date', ['l', 'r', 'l'])}
 <p>The first Sunday of December and 8 December are the busiest days. Almost all the towns are small: Sarezzo, Castegnato, Verolavecchia and Paitone near Brescia, Primaluna and Galbiate near Lecco, Varano Borghi and Caronno Varesino near Varese.</p>
 ${h.mini('natale', { d: { reg: 1, g: 2 } })}
 <h2>How many markets on key days</h2>

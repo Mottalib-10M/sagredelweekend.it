@@ -11,8 +11,35 @@ export interface Evento {
   id: string; n: string; en?: string; t: Tipo; tl?: string; dal: string; al: string; g?: string[]; ora?: string;
   c: string; cc?: string[]; p?: string; r: Regione; lat?: number; lon?: number; ris?: boolean; org?: string; src: Fonte; k?: string;
 }
-export const EVENTI: Evento[] = (DATI as { eventi: Evento[] }).eventi;
 export const LETTO_IL: string = (DATI as { letto_il: string }).letto_il;
+/**
+ * Jour de référence de TOUT le site : jour du build (__BUILD_DAY__), ou jour de lecture des fichiers s'il est plus
+ * récent. Les textes statiques et le premier rendu des outils comptent à partir de lui : un même objet (« ce
+ * week-end ») a donc le même chiffre partout sur la page (testeurs naïfs du 2026-11-14 : 71 dans l'outil, 86
+ * dans le texte, parce que l'outil partait du jour du build et le texte du jour de lecture).
+ */
+export const OGGI: string = typeof __BUILD_DAY__ !== 'undefined' && __BUILD_DAY__ > LETTO_IL ? __BUILD_DAY__ : LETTO_IL;
+
+/** Nom d'un événement satellite d'un autre (inauguration, stands gastronomiques) : une seule fiche par marché. */
+const SATELLITE = /^inaugurazione\b|stand gastronom/i;
+const RAW: Evento[] = (DATI as { eventi: Evento[] }).eventi.filter((e) => e.al >= OGGI);
+/**
+ * Doublons : l'Open Data Hub publie parfois le même mercatino trois fois (« Inaugurazione del mercatino … » sur un
+ * mois, le mercatino, « … Gli stand gastronomici »). Une fiche satellite de plus d'un jour est retirée quand un autre
+ * événement du même type, dans la même commune, couvre ses dates ; « stand gastronomici » passe en « con ristoro ».
+ */
+function senzaDoppioni(lista: Evento[]): Evento[] {
+  const tolti = new Set<string>();
+  const ristoro = new Set<string>();
+  for (const e of lista) {
+    if (!SATELLITE.test(e.n) || e.dal === e.al) continue;
+    const madre = lista.find((m) => m !== e && !SATELLITE.test(m.n) && m.t === e.t && m.c === e.c && m.dal <= e.dal && m.al >= e.al);
+    if (madre) { tolti.add(e.id); if (/stand gastronom/i.test(e.n)) ristoro.add(madre.id); }
+  }
+  return lista.filter((e) => !tolti.has(e.id)).map((e) => (ristoro.has(e.id) ? { ...e, ris: true } : e));
+}
+/** Les événements du calendrier : ceux qui finissent le jour de référence ou après, sans doublons. */
+export const EVENTI: Evento[] = senzaDoppioni(RAW);
 
 export const REGIONI: Regione[] = ['lom', 'aa', 'er', 'pug'];
 export const NOME_REGIONE: Record<Regione, { it: string; en: string }> = {
@@ -64,8 +91,11 @@ export function nelPeriodo(e: Evento, dal: string, al: string) {
   if (!e.g) return true;
   return e.g.some((x) => x >= dal && x <= al);
 }
-/** Un événement étalé sur plus de 45 jours, sans liste de jours ou avec plus de 10 jours (marché hebdomadaire, dégustation répétée), est un marché ou une saison, pas une fête : on le classe à part. */
-export const lungo = (e: Evento) => giorniTra(e.dal, e.al) > 45 && (!e.g || e.g.length > 10);
+/** Un événement étalé sur plus de 45 jours, sans liste de jours ou avec plus de 10 jours (dégustation répétée), ou un
+ *  marché hebdomadaire déclaré comme tel dans son nom (« Grande mercato settimanale di Merano », 7 jours sur deux mois :
+ *  testeurs du 2026-11-14), est un marché ou une saison, pas une fête : on le classe à part. */
+const SETTIMANALE = /settimanal|wochenmarkt|\bogni (luned|marted|mercoled|gioved|venerd|sabato|domenica)/i;
+export const lungo = (e: Evento) => (giorniTra(e.dal, e.al) > 45 && (!e.g || e.g.length > 10)) || (SETTIMANALE.test(e.n) && e.dal !== e.al);
 
 // ---- distance -----------------------------------------------------------------------------
 export function km(a: { lat: number; lon: number }, b: { lat: number; lon: number }) {
@@ -76,7 +106,11 @@ export function km(a: { lat: number; lon: number }, b: { lat: number; lon: numbe
 }
 
 // ---- ricerca --------------------------------------------------------------------------------
-export interface Filtro { dal: string; al: string; regione?: Regione | ''; tipi?: Tipo[]; vicino?: { lat: number; lon: number; km: number }; soloRistoro?: boolean; senzaLunghi?: boolean; provincia?: string; testo?: RegExp }
+export interface Filtro { dal: string; al: string; regione?: Regione | ''; tipi?: Tipo[]; vicino?: { lat: number; lon: number; km: number }; soloRistoro?: boolean; senzaLunghi?: boolean; provincia?: string; testo?: RegExp;
+  /** Seulement les événements dont le premier jour tombe dans la période (calendrier 2027 : pas les marchés de Noël 2026). */
+  iniziaNelPeriodo?: boolean }
+/** Premier jour réel d'un événement. */
+export const primoGiorno = (e: Evento) => e.g?.[0] ?? e.dal;
 export interface Trovato { e: Evento; km?: number }
 export function cerca(f: Filtro, eventi: Evento[] = EVENTI): Trovato[] {
   const out: Trovato[] = [];
@@ -88,6 +122,7 @@ export function cerca(f: Filtro, eventi: Evento[] = EVENTI): Trovato[] {
     if (f.senzaLunghi && lungo(e)) continue;
     if (f.testo && !f.testo.test(e.n)) continue;
     if (!nelPeriodo(e, f.dal, f.al)) continue;
+    if (f.iniziaNelPeriodo && primoGiorno(e) < f.dal) continue;
     let d: number | undefined;
     if (f.vicino) {
       if (e.lat == null || e.lon == null) continue;

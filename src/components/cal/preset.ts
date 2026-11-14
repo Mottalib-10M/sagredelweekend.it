@@ -1,8 +1,8 @@
 /** Réglages de départ du moteur de recherche, fixés par chaque page. */
 import type { Regione } from '../../lib/engine/eventi';
+import type { Periodo, Cosa } from '../../lib/engine/ricerca';
 
-export type Periodo = 'weekend' | 'prossimo' | 'oggi' | 'domani' | '7' | '30' | `m${string}` | 'a2027';
-export type Cosa = 'tutto' | 'feste' | 'natale' | 'mercati' | 'fiere' | 'ristoro' | 'tartufo';
+export type { Periodo, Cosa };
 export interface Preset {
   periodo?: Periodo;
   regione?: Regione | '';

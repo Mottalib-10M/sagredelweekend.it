@@ -4,7 +4,7 @@
  */
 import { useEffect, useMemo, useState } from 'react';
 import SelectField from '../ui/SelectField';
-import { EVENTI, stato, addDays, weekday, giorniTra, NOME_REGIONE, LETTO_IL, type Regione } from '../../lib/engine/eventi';
+import { EVENTI, stato, addDays, weekday, giorniTra, NOME_REGIONE, OGGI, type Regione } from '../../lib/engine/eventi';
 import { readParams, str, updateURL } from '../../lib/url-state';
 import { giornoLungo, quando } from './Trova';
 
@@ -26,11 +26,11 @@ export default function Aperto({ lang, regione = '', scelto, idPrefix = 'a' }: P
   const mercatini = useMemo(() => EVENTI.filter((e) => e.t === 'natale' && (!regione || e.r === regione) && giorniTra(e.dal, e.al) >= 2)
     .sort((a, b) => a.c.localeCompare(b.c) || a.n.localeCompare(b.n)), [regione]);
   const def = scelto && mercatini.some((e) => e.id === scelto) ? scelto : mercatini[0]?.id ?? '';
-  const [oggi, setOggi] = useState<string>(__BUILD_DAY__ < LETTO_IL ? LETTO_IL : __BUILD_DAY__);
+  const [oggi, setOggi] = useState<string>(OGGI);
   const [id, setId] = useState(def);
   const [g, setG] = useState('0');
   useEffect(() => {
-    const d = oggiRoma(); if (d > LETTO_IL) setOggi(d);
+    const d = oggiRoma(); if (d > OGGI) setOggi(d);
     const u = readParams(window.location.search);
     const m = str(u, 'm', def); if (mercatini.some((e) => e.id === m)) setId(m);
     setG(str(u, 'g', '0'));
