@@ -19,17 +19,15 @@ const description = 'Publisher, editor in charge, host, no advice, intellectual 
     <p>Editor in charge: {AUTHOR_NAME}, responsible for the content published on {SITE_URL}.</p>
     <h2>Host</h2>
     <LegalIdentity mode="hosting" lang={lang} />
-    <h2>Purpose of the site</h2>
-    <p>The site shows, free of charge, the sagre, fairs, village feasts and markets published in the open data of the Lombardy Region, the South Tyrol Open Data Hub, the Emilia-Romagna Region and the Apulia Region. Dates are those filed by municipalities and tourism bodies and may change: the programme of the municipality and of the organisers prevails. The site is independent: it has no link with the regions, municipalities or Pro Loco associations, uses no official emblem or logo and sells no tickets or visibility. Method and limits: <a href={route('method', lang)}>method</a>.</p>
-    <h2>Sources and licences</h2>
-    <p>Data: files of the Lombardy Region and the South Tyrol Open Data Hub under CC0 1.0; files of the Emilia-Romagna Region (APT Servizi) and the Apulia Region under Creative Commons Attribution 4.0, credited on every page with a note that the data were selected and adapted. The site uses the name, dates, place, hours and type of each event, not the descriptions or images, and links to the official listing where there is one.</p>
+    <h2>Purpose of the site and no advice</h2>
+    <p>The site offers free calculators and guides for information. Results are estimates based on the official rules and rates cited on each page; they are neither personal advice, nor a decision, nor a commitment by any authority. Method and limits: <a href={route('method', lang)}>method</a>.</p>
     <h2>Liability</h2>
-    <p>Listings are read from the official files and checked, with no guarantee that they are free of errors or always current. The publisher is not liable for a postponement or cancellation decided by the municipality or the organisers, nor for a trip planned on a date shown here alone. Please report errors through the <a href={route('contact', lang)}>contact page</a>.</p>
+    <p>Parameters are updated and calculations checked against reference cases, with no guarantee that errors are absent. The publisher is not liable for a decision made on an estimate alone. Please report errors through the <a href={route('contact', lang)}>contact page</a>.</p>
     <h2>Intellectual property</h2>
-    <p>Texts, design and code belong to the publisher; short quotations with a link to the original page are welcome. The cited sources remain their owners’.</p>
+    <p>Texts, design and code belong to the publisher; short quotations with a link to the original page are welcome.</p>
     {/* gen-legal-pages:terms */}
     <h2>Personal data and cookies</h2>
-    {GA4_ID ? (<p>What you choose in the search stays in your browser. The site sets Google Analytics audience measurement cookies (<code>_ga</code>, <code>_ga_{GA4_ID.replace('G-', '')}</code>, 13 months at most), with no advertising{CLARITY_ID && '; page stability is monitored with Microsoft Clarity, cookie-free'}. Details, legal basis and how to object: <a href={route('privacy', lang)}>privacy policy</a> and <a href={route('cookies', lang)}>cookies</a> page.</p>) : (<p>What you choose in the search stays in your browser and the site sets no cookies{CLARITY_ID && '; page stability is monitored anonymously with Microsoft Clarity, cookie-free'}. See the <a href={route('privacy', lang)}>privacy policy</a> and the <a href={route('cookies', lang)}>cookies</a> page.</p>)}
+    {GA4_ID ? (<p>What you type in the calculators stays in your browser. The site sets Google Analytics audience measurement cookies (<code>_ga</code>, <code>_ga_{GA4_ID.replace('G-', '')}</code>, 13 months at most), with no advertising{CLARITY_ID && '; page stability is monitored with Microsoft Clarity, cookie-free'}. Details, legal basis and how to object: <a href={route('privacy', lang)}>privacy policy</a> and <a href={route('cookies', lang)}>cookies</a> page.</p>) : (<p>What you type in the calculators stays in your browser and the site sets no cookies{CLARITY_ID && '; page stability is monitored anonymously with Microsoft Clarity, cookie-free'}. See the <a href={route('privacy', lang)}>privacy policy</a> and the <a href={route('cookies', lang)}>cookies</a> page.</p>)}
     {/* /gen-legal-pages:terms */}
     <h2>Reporting content</h2>
     <p>Report unlawful content to <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>, with the page address and the reason.</p>

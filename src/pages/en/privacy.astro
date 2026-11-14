@@ -18,7 +18,7 @@ const description = GA4_ID ? 'Google Analytics audience measurement with cookies
     <LegalIdentity lang={lang} />
     <p>For any question about your data: <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. No data protection officer has been appointed, as the conditions of Article 37 GDPR are not met.</p>
     <h2>2. What you type stays in your browser</h2>
-    <p>The site’s searches run in your browser. The region, period, type of event, town and radius you choose <strong>are sent to no server</strong>, are stored nowhere and are linked to no identifier. The site asks for no account, name or email address. If you choose “My location”, your browser asks for permission and the position is used only on your device to work out distances: it is neither sent to us nor stored. A share link carries your choices in the page address: only send it to people you choose.</p>
+    <p>The site’s calculations run in your browser. The amounts, dates and circumstances you enter <strong>are sent to no server</strong>, are stored nowhere and are linked to no identifier. The site asks for no account, name or email address. A share link carries your inputs in the page address: only send it to people you choose.</p>
     <h2>3. Processing carried out</h2>
     <h3>Host access logs</h3>
     <p>For each request the host records the IP address, date and time, the page requested, the browser and the referring page. Purpose: security of the service and fault diagnosis. Legal basis: the publisher’s legitimate interests (Article 6(1)(f) GDPR). Retention: as set by the host’s own policy.</p>
@@ -47,7 +47,7 @@ const description = GA4_ID ? 'Google Analytics audience measurement with cookies
     {CLARITY_ID && (<p>For stability monitoring: block the <code>clarity.ms</code> domain in your browser or with a content blocker.</p>)}
     <p>You may lodge a complaint with the supervisory authority: {LEGAL.supervisoryAuthority} (<a href={LEGAL.supervisoryAuthorityUrl} rel="nofollow noopener" target="_blank">{LEGAL.supervisoryAuthorityUrl}</a>).</p>
     <h2>7. No automated decision-making</h2>
-    <p>A search result is a list produced at your request, from your choices, in your browser. It has no legal effect and is not an automated decision under Article 22 GDPR. No profiling takes place.</p>
+    <p>A calculation result is an estimate produced at your request, from your inputs, in your browser. It has no legal effect and is not an automated decision under Article 22 GDPR. No profiling takes place.</p>
     <p>See also the <a href={route('cookies', lang)}>cookies</a> page. Last updated: {LAST_UPDATED}.</p>
   </div>
 </PageLayout>
