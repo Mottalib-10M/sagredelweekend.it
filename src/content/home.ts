@@ -1,25 +1,40 @@
 /** Accueil (page pilier) : texte italien et anglais. Tout chiffre vient du moteur (K). */
 import type { FAQ, Helpers } from '../lib/page-types';
 import { KIT as K } from '../lib/kit';
+import { route } from '../i18n/routes';
 
 // Chaque chiffre est celui que l'outil affiche pour le même objet (K.contaStrumento), avec sa période en mots.
 const W = K.intervallo('weekend', K.OGGI);
 const nWe = K.contaStrumento({ periodo: 'weekend' });
-const nWeAa = K.contaStrumento({ periodo: 'weekend', regione: 'aa' });
-const nWeLom = K.contaStrumento({ periodo: 'weekend', regione: 'lom' });
 const DIC = K.intervallo('m2026-12', K.OGGI);
 const nDic = K.contaStrumento({ periodo: 'm2026-12' });
 const NAT = K.intervallo('natale', K.OGGI);
 export const nNatHome = K.contaStrumento({ periodo: 'natale', cosa: 'natale' });
 const nNat = nNatHome;
 const n27 = K.contaStrumento({ periodo: 'a2027' });
-const lomTot = K.FONTI.lom.righe;
 const lomFut = K.EVENTI.filter((e) => e.r === 'lom').length;
 const lomRis = K.EVENTI.filter((e) => e.r === 'lom' && e.ris).length;
-const lom27 = K.FONTI.lom.anno_dopo;
 const P = (dal: string, al: string, lang: 'it' | 'en') => K.periodoParole(dal, al, lang);
+/**
+ * Le compte du week-end région par région ; une région à 0 le dit, avec la prochaine date du fichier (testeurs
+ * naïfs, 3e tour : « il resto in Emilia-Romagna e in Puglia » alors que la Puglia avait 0).
+ */
+const perRegione = (lang: 'it' | 'en') => {
+  const n = K.REGIONI.map((r) => ({ r, n: K.contaStrumento({ periodo: 'weekend', regione: r }) })).sort((a, b) => b.n - a.n);
+  const nome = (r: (typeof K.REGIONI)[number]) => (lang === 'it' ? 'in ' : 'in ') + K.NOME_REGIONE[r][lang];
+  const pieni = n.filter((x) => x.n > 0).map((x) => `${x.n} ${nome(x.r)}`);
+  const vuoti = n.filter((x) => x.n === 0).map((x) => {
+    const d = K.prossimaData({ periodo: 'weekend', regione: x.r });
+    if (lang === 'it') return `${nome(x.r)} nessuno, ${d ? `e la prossima data nel calendario regionale è ${K.dl(d, 'it')}` : 'e il calendario regionale non ha ancora date successive'}`;
+    return `none ${nome(x.r)}, ${d ? `where the next date in the regional calendar is ${K.dl(d, 'en')}` : 'where the regional calendar has no later date yet'}`;
+  });
+  const e = lang === 'it' ? ' e ' : ' and ';
+  const testa = pieni.length > 1 ? `${pieni.slice(0, -1).join(', ')}${e}${pieni[pieni.length - 1]}` : pieni.join('');
+  return [testa, ...vuoti].filter(Boolean).join('; ');
+};
 
-export const HOME_SOURCES = ['lom', 'odh', 'er', 'pug', 'datigov', 'cc0', 'ccby'];
+// Licences (CC0, CC BY) : sur la page Metodo et dans la mention du pied de page, pas dans le corps de l'accueil.
+export const HOME_SOURCES = ['lom', 'odh', 'er', 'pug', 'datigov'];
 
 type Lang = 'it' | 'en';
 export interface HomeText {
@@ -31,17 +46,6 @@ export interface HomeText {
   faqs: FAQ[];
 }
 
-const tabRegioni = (h: Helpers) => h.table(
-  [h.T('Regione', 'Region'), h.T('Fonte', 'Source'), h.T('Licenza', 'Licence'), h.T(`Eventi dal ${h.dm(K.OGGI)} in poi`, `Events from ${h.dm(K.OGGI)} on`), h.T(`Eventi ${P(W.dal, W.al, 'it')}`, `Events ${P(W.dal, W.al, 'en')}`)],
-  (['lom', 'aa', 'er', 'pug'] as const).map((r) => [
-    K.NOME_REGIONE[r][h.lang],
-    { lom: h.T('Comuni, via Regione Lombardia', 'Municipalities, via the Lombardy Region'), aa: 'Open Data Hub (NOI Techpark)', er: 'APT Servizi Emilia-Romagna', pug: h.T('Osservatorio turistico Puglia', 'Apulia tourism observatory') }[r],
-    r === 'lom' || r === 'aa' ? 'CC0' : 'CC BY 4.0',
-    K.EVENTI.filter((e) => e.r === r).length,
-    K.contaStrumento({ periodo: 'weekend', regione: r }),
-  ]),
-  h.T(`Le quattro regioni del calendario, file letti il ${h.day(K.LETTO_IL)}`, `The four regions in the calendar, files read on ${h.day(K.LETTO_IL)}`), ['l', 'l', 'l', 'r', 'r'],
-);
 const tabProvince = (h: Helpers) => {
   const c = new Map<string, number>();
   for (const e of K.EVENTI) if (e.r === 'lom') c.set(e.p ?? '', (c.get(e.p ?? '') ?? 0) + 1);
@@ -50,20 +54,19 @@ const tabProvince = (h: Helpers) => {
 };
 
 const it: HomeText = {
-  title: 'Sagre questo weekend: calendario ufficiale delle Regioni',
-  description: 'Sagre questo weekend e nei prossimi mesi in Lombardia, Alto Adige, Emilia-Romagna e Puglia, dai file pubblici delle Regioni: date, comune, programma e fonte.',
-  h1: 'Sagre questo weekend, dai calendari ufficiali delle Regioni',
-  intro: `Sagre questo weekend in quattro regioni: ${K.regioniCoperte('it')}, le sole che pubblicano le date delle feste in un file aperto e aggiornato. Scegli la regione, poi il periodo: la lista si aggiorna sotto.`,
-  resume: `Questo fine settimana, ${P(W.dal, W.al, 'it')}, le sagre, le feste e i mercatini dei file ufficiali sono ${nWe}: ${nWeAa} in Alto Adige, ${nWeLom} in Lombardia, il resto in Emilia-Romagna e in Puglia. Il calendario non nasce dalle segnalazioni degli organizzatori, come quasi tutti i siti di sagre, ma dai dati pubblici delle Regioni: in Lombardia ogni Comune deve comunicare alla Regione le sagre e le fiere su area pubblica, e il file regionale ne conta ${lomTot}, di cui ${lomFut} ancora da svolgere e ${lom27} già fissate per il 2027. Per l’Alto Adige usiamo gli eventi dell’Open Data Hub, per l’Emilia-Romagna quelli di APT Servizi, per la Puglia quelli dell’osservatorio turistico regionale. Ogni scheda dice da quale Regione viene, e sotto la lista c’è il giorno dell’ultima lettura; per le altre sedici regioni non abbiamo trovato un file aperto e aggiornato, e qui non le inventiamo.`,
+  title: 'Sagre questo weekend in 4 regioni: calendario ufficiale',
+  description: 'Sagre questo weekend in 4 regioni: Lombardia, Alto Adige, Emilia-Romagna e Puglia, dai calendari pubblici delle Regioni, con data, comune, programma e fonte.',
+  h1: 'Sagre questo weekend in 4 regioni, dai calendari ufficiali',
+  intro: `Sagre questo weekend in 4 regioni: ${K.regioniCoperte('it')}, le sole che pubblicano le date delle feste in un calendario pubblico e aggiornato. Scegli la regione, poi il periodo: la lista si aggiorna sotto.`,
+  resume: `Questo fine settimana, ${P(W.dal, W.al, 'it')}, le sagre, le feste e i mercatini in calendario sono ${nWe}: ${perRegione('it')}. Il calendario non nasce dalle segnalazioni degli organizzatori, come quasi tutti i siti di sagre, ma dai calendari pubblici delle Regioni: in Lombardia ogni Comune deve comunicare alla Regione le sagre e le fiere su area pubblica, e ne restano ${lomFut} ancora da svolgere. Le date dell’Alto Adige vengono dalla Provincia di Bolzano, quelle dell’Emilia-Romagna e della Puglia dagli enti del turismo delle due Regioni. Ogni scheda dice da quale Regione viene, e sotto la lista c’è il giorno dell’ultima lettura; per le altre sedici regioni non abbiamo trovato un calendario pubblico aggiornato, e qui non le inventiamo.`,
   facts: [],
   listsTitle: 'Tutte le pagine del calendario',
   foldTitle: 'Come leggere il calendario delle sagre',
   why: (h) => `
 <h2>Sagre questo weekend: da dove vengono le date</h2>
-<p>Chi cerca «sagre questo weekend» trova di solito elenchi compilati dagli organizzatori stessi, che pagano per comparire in alto o caricano l’evento quando se ne ricordano. Il risultato sono feste già finite, date dell’anno prima e paesi interi che mancano. Noi facciamo il contrario: partiamo dai file che le Regioni pubblicano su ${h.src('datigov', 'dati.gov.it')} e sui propri portali, e teniamo solo ciò che ha una data a venire.</p>
+<p>Chi cerca «sagre questo weekend» trova di solito elenchi compilati dagli organizzatori stessi, che pagano per comparire in alto o caricano l’evento quando se ne ricordano. Il risultato sono feste già finite, date dell’anno prima e paesi interi che mancano. Noi facciamo il contrario: partiamo dai calendari che le Regioni pubblicano sui propri siti, e teniamo solo ciò che ha una data a venire.</p>
 <p>La fonte più solida è la Lombardia. La legge regionale sul commercio chiede a ogni Comune di comunicare alla Regione il calendario delle sagre e delle fiere che si svolgono su suolo pubblico: entro il 15 dicembre per l’anno dopo, e ogni settimana per le variazioni. La Regione pubblica tutto nel file ${h.src('lom', '«Sagre e fiere su area pubblica»')}, che chiunque può riutilizzare. Per ogni sagra il file dice il comune, l’indirizzo, gli orari, l’ente organizzatore e se si mangia e si beve sul posto: su ${lomFut} eventi lombardi a venire, ${lomRis} hanno la cucina o il ristoro.</p>
-${tabRegioni(h)}
-<p>In Alto Adige le date arrivano dall’${h.src('odh', 'Open Data Hub')}, dove le associazioni turistiche caricano mercatini, feste di paese, Törggelen e sfilate dei Krampus, liberi da vincoli di riuso. In Emilia-Romagna usiamo l’${h.src('er', 'elenco degli eventi turistici attivi')} pubblicato da APT Servizi per la Regione, in Puglia il file ${h.src('pug', '«Cosa fare in Puglia»')}. Questi due chiedono di citare l’autore, e lo citiamo su ogni pagina; le licenze esatte sono in «Metodo e fonti».</p>
+<p>In Alto Adige le date arrivano dalla ${h.src('odh', 'Provincia di Bolzano')}, dove le associazioni turistiche inseriscono mercatini, feste di paese, Törggelen e sfilate dei Krampus; in Emilia-Romagna dall’${h.src('er', 'ente regionale del turismo')}, in Puglia dall’${h.src('pug', 'osservatorio turistico della Regione')}. Le fonti esatte e le condizioni d’uso sono nella pagina <a href="${route('method', 'it')}">Metodo e fonti</a>.</p>
 ${h.mini('weekend')}
 <h2>Che cosa trovi su questo sito</h2>
 <p>La ricerca in alto mostra che cosa c’è in un periodo: oggi, domani, questo fine settimana (da venerdì a domenica, perché molte sagre aprono il venerdì sera; dal sabato in poi, solo i giorni che restano), il successivo, i prossimi trenta giorni, tutta la stagione dei mercatini o un mese intero fino a dicembre 2027. Puoi limitare la ricerca alle sagre, ai mercatini di Natale, ai mercati o alle sole fiere, oppure alle feste lombarde con cucina. Per cercare intorno a una città vai su ${h.a('vicino', 'sagre vicino a me')}; per sapere se un mercatino è aperto in un giorno preciso c’è ${h.a('natale-aperto', 'il controllo «aperto oggi?»')}.</p>
@@ -88,20 +91,19 @@ ${tabProvince(h)}
 };
 
 const en: HomeText = {
-  title: 'Sagre This Weekend in Italy: Official Regional Calendar',
-  description: 'Sagre this weekend and in coming months in Lombardy, South Tyrol, Emilia-Romagna and Apulia, from the regions’ open data files: dates, town and source.',
-  h1: 'Sagre this weekend in Italy, from official regional calendars',
-  intro: `Sagre this weekend in Italy, from four regions: ${K.regioniCoperte('en')}, the only ones that publish festival dates in an open, current file. Pick the region, then the period: the list updates below.`,
-  resume: `This weekend, ${P(W.dal, W.al, 'en')}, the official files list ${nWe} sagre, village festivals and markets: ${nWeAa} in South Tyrol, ${nWeLom} in Lombardy and the rest in Emilia-Romagna and Apulia. A sagra is a local food or harvest festival, usually run by the town or a volunteer association. This calendar does not rely on organisers sending in their events, as almost every sagre site does, but on regional open data: in Lombardy each municipality must report its sagre and fairs on public land to the Region, and the regional file holds ${lomTot} of them, ${lomFut} still to come and ${lom27} already set for 2027. South Tyrol comes from the Open Data Hub, Emilia-Romagna from the regional tourism board, Apulia from its tourism observatory. Every listing says which region it comes from, and the date of the last reading sits under the list; for the other sixteen regions we have found no open, current file, and we do not make them up.`,
+  title: 'Sagre This Weekend in 4 Italian Regions: Official Calendar',
+  description: 'Sagre this weekend in 4 Italian regions: Lombardy, South Tyrol, Emilia-Romagna and Apulia, from the regions’ public calendars, with dates, town and source.',
+  h1: 'Sagre this weekend in 4 Italian regions, from official calendars',
+  intro: `Sagre this weekend in Italy, from 4 regions: ${K.regioniCoperte('en')}, the only ones that publish festival dates in a public, current calendar. Pick the region, then the period: the list updates below.`,
+  resume: `This weekend, ${P(W.dal, W.al, 'en')}, the calendar lists ${nWe} sagre, village festivals and markets: ${perRegione('en')}. A sagra is a local food or harvest festival, usually run by the town or a volunteer association. This calendar does not rely on organisers sending in their events, as almost every sagre site does, but on the regions’ public calendars: in Lombardy each municipality must report its sagre and fairs on public land to the Region, and ${lomFut} of them are still to come. South Tyrol’s dates come from the Province of Bolzano, Emilia-Romagna’s and Apulia’s from the two regions’ tourism boards. Every listing says which region it comes from, and the date of the last reading sits under the list; for the other sixteen regions we have found no public, current calendar, and we do not make them up.`,
   facts: [],
   listsTitle: 'Every page of the calendar',
   foldTitle: 'How to read the sagre calendar',
   why: (h) => `
-<h2>Sagre this weekend: where the dates come from</h2>
-<p>Search for Italian sagre and you mostly land on lists filled in by the organisers themselves, who pay to be shown first or upload their event when they remember. The result is festivals that are already over, last year’s dates and whole villages missing. We work the other way round: we start from the files the regions publish on ${h.src('datigov', 'dati.gov.it')} and on their own portals, and keep only what still has a date ahead.</p>
+<h2>Sagre this weekend in 4 Italian regions: where the dates come from</h2>
+<p>Search for Italian sagre and you mostly land on lists filled in by the organisers themselves, who pay to be shown first or upload their event when they remember. The result is festivals that are already over, last year’s dates and whole villages missing. We work the other way round: we start from the calendars the regions publish on their own sites, and keep only what still has a date ahead.</p>
 <p>Lombardy is the strongest source. Its regional trade law requires every municipality to report to the Region the sagre and fairs held on public land: by 15 December for the following year, then weekly for changes. The Region publishes the lot in the file ${h.src('lom', '“Sagre e fiere su area pubblica”')} which anyone may reuse. For each event the file gives the town, the address, the hours, the organiser and whether food and drink are served: of the ${lomFut} upcoming Lombard events, ${lomRis} serve food.</p>
-${tabRegioni(h)}
-<p>South Tyrol’s dates come from the ${h.src('odh', 'Open Data Hub')}, where the tourist associations upload Christmas markets, village feasts, Törggelen wine evenings and Krampus parades, free to reuse. For Emilia-Romagna we use the ${h.src('er', 'list of active tourism events')} published by APT Servizi for the Region, for Apulia the file ${h.src('pug', '“Cosa fare in Puglia”')}. Those two ask for credit, which every page gives; the exact licences are under “Method and sources”.</p>
+<p>South Tyrol’s dates come from the ${h.src('odh', 'Province of Bolzano')}, where tourist associations upload Christmas markets, village feasts, Törggelen wine evenings and Krampus parades; Emilia-Romagna’s from the ${h.src('er', 'regional tourism board')}, Apulia’s from the ${h.src('pug', 'Region’s tourism observatory')}. The exact sources and terms of use are on the <a href="${route('method', 'en')}">Method and sources</a> page.</p>
 ${h.mini('weekend')}
 <h2>What this site does</h2>
 <p>The search at the top shows what is on in a given period: today, tomorrow, this weekend (Friday to Sunday, because many sagre open on Friday evening; from Saturday on, only the days left), the next one, the next thirty days, the whole Christmas market season or any month up to December 2027. You can narrow it to sagre, Christmas markets, markets or fairs only, or to Lombard festivals that serve food. To search around a town, use ${h.a('vicino', 'sagre near me')}; to check whether a market is open on a given day, use ${h.a('natale-aperto', 'the “open today?” check')}.</p>

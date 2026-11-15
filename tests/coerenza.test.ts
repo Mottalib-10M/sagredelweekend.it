@@ -9,7 +9,7 @@ import { describe, it, expect } from 'vitest';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { EVENTI, OGGI, LETTO_IL, REGIONI, lungo, type Regione } from '../src/lib/engine/eventi';
-import { contaStrumento, ricerca, periodoParole, orario, schemaApertura, nomeVisibile, intervallo } from '../src/lib/engine/ricerca';
+import { contaStrumento, ricerca, periodoParole, orario, orarioScheda, prossimaData, schemaApertura, nomeVisibile, intervallo } from '../src/lib/engine/ricerca';
 import { PAGES } from '../src/lib/pages';
 import { HOME, nNatHome } from '../src/content/home';
 import CITTA from '../src/data/citta.json';
@@ -112,5 +112,24 @@ describe('HTML construit (après npm run build)', () => {
       viste++;
     }
     expect(viste).toBeGreaterThan(5);
+  });
+});
+
+// 3e tour (2026-11-14) : l'horaire de la soirée d'ouverture n'est plus présenté comme celui de la saison ;
+// une recherche vide donne la prochaine date du fichier.
+describe('orario di apertura e prossima data', () => {
+  it('Bolzano : orario abituale + serata di apertura etichettata', () => {
+    const e = { id: 'x', n: 'Mercatino di Natale di Bolzano', t: 'natale', dal: '2026-11-26', al: '2027-01-06', ora: '10:00 – 22:30', ora1: '17:00 – 22:30', orv: 1, c: 'Bolzano', r: 'aa', src: 'odh' } as const;
+    const s = orarioScheda(e as never, 'it');
+    expect(s).toMatch(/^di solito ore 10:00 – 22:30 · giorno d’apertura \(.*26.*\) ore 17:00 – 22:30$/);
+    expect(orarioScheda({ ...e, ora1: undefined, orv: undefined } as never, 'it')).toBe('ore 10:00 – 22:30');
+  });
+  it('prossimaData : dopo il periodo, coerente con la ricerca', () => {
+    for (const r of REGIONI) {
+      const d = prossimaData({ periodo: 'weekend', regione: r });
+      if (!d) continue;
+      expect(d > intervallo('weekend', OGGI).al).toBe(true);
+      expect(contaStrumento({ periodo: `m${d.slice(0, 7)}`, regione: r })).toBeGreaterThan(0);
+    }
   });
 });

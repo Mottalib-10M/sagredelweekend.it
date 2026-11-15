@@ -7,6 +7,7 @@ import SelectField from '../ui/SelectField';
 import { EVENTI, stato, addDays, weekday, giorniTra, NOME_REGIONE, OGGI, type Regione } from '../../lib/engine/eventi';
 import { readParams, str, updateURL } from '../../lib/url-state';
 import { giornoLungo, quando } from './Trova';
+import { orarioScheda } from '../../lib/engine/ricerca';
 
 type Lang = 'it' | 'en';
 const L = {
@@ -65,7 +66,7 @@ export default function Aperto({ lang, regione = '', scelto, idPrefix = 'a' }: P
         <p className="mt-1 text-base font-medium text-navy-800">{riga}</p>
         <table className="mt-3 w-full text-sm"><tbody className="divide-y divide-navy-200">
           <tr><td className="py-1.5 pr-3 text-navy-600">{t.date}</td><td className="py-1.5 text-right text-navy-900">{quando(e, lang)}{e.g ? ` (${t.alcuni})` : ''}</td></tr>
-          {e.ora && <tr><td className="py-1.5 pr-3 text-navy-600">{t.ore}</td><td className="py-1.5 text-right text-navy-900">{e.ora}</td></tr>}
+          {orarioScheda(e, lang) && <tr><td className="py-1.5 pr-3 text-navy-600">{t.ore}</td><td className="py-1.5 text-right text-navy-900">{orarioScheda(e, lang)}</td></tr>}
           <tr><td className="py-1.5 pr-3 text-navy-600">{t.dove}</td><td className="py-1.5 text-right text-navy-900">{e.c} ({NOME_REGIONE[e.r][lang]})</td></tr>
         </tbody></table>
         <p className="mt-2 text-xs text-navy-500">{t.nota}</p>

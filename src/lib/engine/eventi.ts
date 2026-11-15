@@ -8,7 +8,7 @@ export type Regione = 'lom' | 'aa' | 'er' | 'pug';
 export type Tipo = 'sagra' | 'fiera' | 'festa' | 'natale' | 'mercato';
 export type Fonte = 'lom' | 'odh' | 'er' | 'pug';
 export interface Evento {
-  id: string; n: string; en?: string; t: Tipo; tl?: string; dal: string; al: string; g?: string[]; ora?: string;
+  id: string; n: string; en?: string; t: Tipo; tl?: string; dal: string; al: string; g?: string[]; ora?: string; ora1?: string; orv?: number;
   c: string; cc?: string[]; p?: string; r: Regione; lat?: number; lon?: number; ris?: boolean; org?: string; src: Fonte; k?: string;
 }
 export const LETTO_IL: string = (DATI as { letto_il: string }).letto_il;

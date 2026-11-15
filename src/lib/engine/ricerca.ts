@@ -46,6 +46,26 @@ export function ricerca(s: Stato, oggi: string = OGGI): Risultato {
   const lista = mostraLunghi ? tutti : tutti.filter((x) => !lungo(x.e));
   return { dal, al, tutti, lista, lunghiN: tutti.length - lista.length };
 }
+/**
+ * Premier jour où la même recherche trouve quelque chose après la période (« in Puglia nessuno questo weekend :
+ * prossima data domenica 6 dicembre »), ou null si les fichiers n'ont rien après. Testeurs naïfs, 3e tour.
+ */
+export function prossimaData(s: Stato, oggi: string = OGGI): string | null {
+  const { al } = intervallo(s.periodo as Periodo, oggi);
+  const da = addDays(al, 1);
+  const cosa = (s.cosa ?? 'tutto') as Cosa;
+  const mostraLunghi = s.conLunghi || cosa === 'mercati' || cosa === 'natale';
+  const dopo = cerca({
+    dal: da, al: '9999-12-31', regione: s.regione || undefined, tipi: TIPI[cosa] ?? undefined, soloRistoro: cosa === 'ristoro',
+    testo: cosa === 'tartufo' ? RE_TARTUFO : undefined, vicino: s.vicino, senzaLunghi: !mostraLunghi,
+  });
+  let min: string | null = null;
+  for (const { e } of dopo) {
+    const d = e.g ? e.g.find((x) => x >= da) : e.dal > da ? e.dal : da;
+    if (d && (!min || d < min)) min = d;
+  }
+  return min;
+}
 /** Le chiffre que l'outil affiche pour ces réglages, au jour de référence. */
 export const contaStrumento = (s: Stato, oggi: string = OGGI) => ricerca(s, oggi).lista.length;
 
@@ -86,6 +106,20 @@ export function orario(ora: string | undefined, lang: Lang): string {
   const m = o.match(/^(\d\d:\d\d)\s*–\s*23:59$/);
   if (m) return lang === 'it' ? `dalle ${m[1]}` : `from ${m[1]}`;
   return lang === 'it' ? `ore ${o}` : `${o}`;
+}
+
+/**
+ * Horaire d'une fiche : `ora` = horaire habituel, `ora1` = celui du seul jour d'ouverture quand il diffère, `orv` =
+ * horaires qui changent selon les jours. Bolzano « ore 17:00 – 22:30 » était l'horaire de la soirée d'ouverture
+ * affiché comme celui de toute la saison (testeurs naïfs, 3e tour du 2026-11-14).
+ */
+export function orarioScheda(e: Evento, lang: Lang): string {
+  const base = orario(e.ora, lang);
+  const parti: string[] = [];
+  if (base) parti.push(e.orv || e.ora1 ? `${lang === 'it' ? 'di solito' : 'usually'} ${base}` : base);
+  const o1 = orario(e.ora1, lang);
+  if (o1) parti.push(`${lang === 'it' ? 'giorno d’apertura' : 'opening day'} (${corto(e.dal, lang)}) ${o1}`);
+  return parti.join(' · ');
 }
 
 /** Titres génériques (« Mercatini di Natale ») : la commune s'ajoute pour les distinguer dans la liste. */

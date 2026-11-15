@@ -13,6 +13,7 @@ Fonti (nessuna promessa di aggiornamento automatico : il file si rigenera a mano
   pug  Regione Puglia, « Cosa fare in Puglia - eventi e attività » (DMS), CC BY 4.0
 """
 import csv, datetime as dt, glob, json, os, re, subprocess, sys, unicodedata
+from collections import Counter
 
 ARGS = [a for a in sys.argv[1:] if not a.startswith('--')]
 RAW = ARGS[0] if ARGS else os.path.expanduser('~/Documents/GitHub/reports/niches-2026-11-13/sagre-data')
@@ -126,13 +127,22 @@ for i in odh:
   if not lat:
     gp = (i.get('GpsInfo') or [{}])[0] or {}
     lat, lon = gp.get('Latitude'), gp.get('Longitude')
-  b = (i.get('EventDate') or [{}])[0] or {}
-  ora = ' – '.join(o[:5] for o in (b.get('Begin') or '', b.get('End') or '') if o and o[:5] not in ('00:00', '23:59'))
+  # Horaires par jour : la première date (souvent la soirée d'ouverture) n'est pas l'horaire de la saison
+  # (testeurs naïfs du 2026-11-14 : Bolzano « 17:00 – 22:30 » lu comme l'horaire de tous les jours).
+  hh = lambda b: ' – '.join(o[:5] for o in (b.get('Begin') or '', b.get('End') or '') if o and o[:5] not in ('00:00', '23:59'))
+  eds_o = sorted(eds or (i.get('EventDate') or [{}])[:1], key=lambda d: (d.get('From') or '')[:10])
+  ore = [(str(d.get('From') or '')[:10], hh(d or {})) for d in eds_o]
+  fut = [o for d, o in ore if d >= OGGI] or [o for _, o in ore]
+  apertura = ore[0][1] if len(ore) > 1 and ore[0][0] >= OGGI else ''
+  resto = fut[1:] if apertura else fut
+  ora = Counter(resto).most_common(1)[0][0] if resto else (fut[0] if fut else '')
+  ora1 = apertura if apertura and apertura != ora else ''
+  orv = 1 if len(set(resto)) > 1 else None
   t = tipo_da_nome(f'{nome} {nome_de}', 'fiera' if re.search(r'\bfiera\b|messe\b', nome, re.I) else 'festa')
   if re.search(r'mercatini nei dintorni|weihnachtsmaerkte', tags) and t == 'mercato': t = 'natale'
   ev.append({'id': f"odh-{i['Id'][:12]}", 'n': nome, 'en': nome_en if nome_en and nome_en != nome else None, 't': t, 'dal': dal, 'al': al,
              'g': giorni if giorni and len(giorni) < ((dt.date.fromisoformat(al) - dt.date.fromisoformat(dal)).days + 1) else None,
-             'ora': ora, 'c': citta.split('|')[-1].strip(), 'p': 'BZ', 'r': 'aa', 'lat': round(lat, 5) if lat else None, 'lon': round(lon, 5) if lon else None,
+             'ora': ora, 'ora1': ora1, 'orv': orv, 'c': citta.split('|')[-1].strip(), 'p': 'BZ', 'r': 'aa', 'lat': round(lat, 5) if lat else None, 'lon': round(lon, 5) if lon else None,
              'ris': None, 'org': '', 'src': 'odh', 'k': i['Id']})
 
 # --- Emilia-Romagna (CC BY 4.0) ----------------------------------------------------------------
