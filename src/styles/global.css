@@ -137,3 +137,6 @@ p[id$="-help"]:not([role="status"]), [data-fixe], [data-actuellement], [aria-liv
   .limits dt { font-size: 0.8rem; color: var(--color-navy-600); }
   .limits dd { font-size: 1.25rem; font-weight: 700; color: var(--color-navy-900); font-variant-numeric: tabular-nums; }
 }
+
+/* Champs en subgrid : quand le formulaire est étiré à la hauteur du résultat voisin, ses rangées ne doivent pas s'étirer (trous entre libellé, case et aide). */
+:where(form, div, fieldset):has(> .grid-rows-subgrid) { align-content: start; }
